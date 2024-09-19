@@ -1,0 +1,3 @@
+[submodule "src/hubert_ov_seg/FrozenSeg"]
+	path = src/hubert_ov_seg/FrozenSeg
+	url = https://github.com/maxdoesch/FrozenSeg.git
