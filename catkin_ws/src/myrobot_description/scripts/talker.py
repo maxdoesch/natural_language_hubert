@@ -23,7 +23,7 @@ def body_joint_talker():
     rospy.loginfo(z_mean_value)
     pub1.publish(z_mean_value)
 
-    z_next_value = 1700
+    z_next_value = 1450 # Mean value would be 1425
     while not rospy.is_shutdown():
         if z_next_value > 2350:
             z_next_value = 500
