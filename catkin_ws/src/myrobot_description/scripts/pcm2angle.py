@@ -1,4 +1,5 @@
-import numpy as np
+# Define pi as PI
+PI = 3.1415926536
 
 def __calculate(pcm, angle_min, angle_max, pcm_min, pcm_max) -> float:
     # Raise error if PCM is outside of the boundary
@@ -18,8 +19,8 @@ def body(pcm: int) -> float:
     :return: Corresponding angle in radians.
     """
 
-    angle_min = -np.pi/2
-    angle_max = np.pi/2
+    angle_min = -PI/2
+    angle_max = PI/2
 
     pcm_min = 560
     pcm_max = 2330
@@ -36,8 +37,8 @@ def head_pan(pcm: int) -> float:
     :return: Corresponding angle in radians.
     """
 
-    angle_min = -np.pi/2
-    angle_max = np.pi/2
+    angle_min = -PI/2
+    angle_max = PI/2
 
     pcm_min = 550
     pcm_max = 2400
@@ -54,8 +55,8 @@ def head_tilt(pcm: int) -> float:
     :return: Corresponding angle in radians.
     """
 
-    angle_min = -np.pi/4
-    angle_max = np.pi/2
+    angle_min = -PI/4
+    angle_max = PI/2
 
     pcm_min = 950
     pcm_max = 2400
@@ -72,8 +73,8 @@ def shoulder(pcm: int) -> float:
     :return: Corresponding angle in radians.
     """
 
-    angle_min = -np.pi/6
-    angle_max = np.pi/2
+    angle_min = -PI/6
+    angle_max = PI/2
 
     pcm_min = 750
     pcm_max = 2200
@@ -90,8 +91,8 @@ def elbow(pcm: int) -> float:
     :return: Corresponding angle in radians.
     """
 
-    angle_min = -np.pi/2
-    angle_max = np.pi/2
+    angle_min = -PI/2
+    angle_max = PI/2
 
     pcm_min = 550
     pcm_max = 2400
