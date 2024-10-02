@@ -3,6 +3,7 @@
 import rospy
 from std_msgs.msg import UInt16
 import time
+from sensor_msgs.msg import JointState
 
 # Body = 560 - 2330
 # HeadPan = 550 - 2340
@@ -17,10 +18,12 @@ import time
 
 def joints_talker():
     pub_body = rospy.Publisher('/servo_body', UInt16, queue_size=10)
-    #pub2 = rospy.Publisher('/joint_states')
+
     pub_neck_tilt = rospy.Publisher('/servo_neck_tilt', UInt16, queue_size=10)
 
     pub_elbow = rospy.Publisher('/servo_elbow', UInt16, queue_size=10)
+
+    pub_joint_states = rospy.Publisher('/joint_states', JointState, queue_size=10)
 
     rospy.init_node('body_joint_talker', anonymous=True)
     #rospy.init_node('neck_tilt_joint_talker', anonymous=True) # Apparently not needed, but I don't see why 
@@ -42,12 +45,12 @@ def joints_talker():
 
             z_next_value = z_next_value + 200
 
-            if z_next_value > 2350:
-                z_next_value = 500
+            if z_next_value > 2330:
+                z_next_value = 560
 
             rospy.loginfo(z_next_value)
             pub_body.publish(z_next_value)
-            if z_next_value == 500:
+            if z_next_value == 560:
                 time.sleep(5)
 
             time.sleep(2)
