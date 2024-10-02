@@ -5,7 +5,7 @@ from std_msgs.msg import UInt16
 import time
 from sensor_msgs.msg import JointState
 
-import pcm2angle
+#import pcm2angle
 
 # Body = 560 - 2330
 # HeadPan = 550 - 2340
@@ -17,6 +17,109 @@ import pcm2angle
 # Right angle value for the camera: 1300
 
 # Always take robot's movements time into consideration
+
+# Define pi as PI
+PI = 3.1415926536
+
+def __calculate(pcm, angle_min, angle_max, pcm_min, pcm_max) -> float:
+    # Raise error if PCM is outside of the boundary
+    if pcm < pcm_min or pcm > pcm_max:
+        raise ValueError(f"PCM must be between {pcm_min} and {pcm_max}.")
+
+    # Linear interpolation from PCM to angle
+    angle_value = angle_min + (pcm - pcm_min) * (angle_max - angle_min) / (pcm_max - pcm_min)
+
+    return angle_value  # Return the angle as a float
+
+def pcm2angle_body(pcm: int) -> float:
+    """
+    Function that converts PCM for BODY servo to angle.
+    
+    :param pcm: PCM value [560, 2330]
+    :return: Corresponding angle in radians.
+    """
+
+    angle_min = -PI/2
+    angle_max = PI/2
+
+    pcm_min = 560
+    pcm_max = 2330
+
+    angle_value = __calculate(pcm, angle_min, angle_max, pcm_min, pcm_max)
+
+    return angle_value  # Return as a float
+
+def pcm2angle_head_pan(pcm: int) -> float:
+    """
+    Function that converts PCM for HEAD_PAN servo to angle.
+    
+    :param pcm: PCM value [550, 2400]
+    :return: Corresponding angle in radians.
+    """
+
+    angle_min = -PI/2
+    angle_max = PI/2
+
+    pcm_min = 550
+    pcm_max = 2400
+
+    angle_value = __calculate(pcm, angle_min, angle_max, pcm_min, pcm_max)
+
+    return angle_value  # Return as a float
+
+def pcm2angle_head_tilt(pcm: int) -> float:
+    """
+    Function that converts PCM for HEAD_TILT servo to angle.
+    
+    :param pcm: PCM value [950, 2400]
+    :return: Corresponding angle in radians.
+    """
+
+    angle_min = -PI/4
+    angle_max = PI/2
+
+    pcm_min = 950
+    pcm_max = 2400
+
+    angle_value = __calculate(pcm, angle_min, angle_max, pcm_min, pcm_max)
+
+    return angle_value  # Return as a float
+
+def pcm2angle_shoulder(pcm: int) -> float:
+    """
+    Function that converts PCM for SHOULDER servo to angle.
+    
+    :param pcm: PCM value [750, 2200]
+    :return: Corresponding angle in radians.
+    """
+
+    angle_min = -PI/6
+    angle_max = PI/2
+
+    pcm_min = 750
+    pcm_max = 2200
+
+    angle_value = __calculate(pcm, angle_min, angle_max, pcm_min, pcm_max)
+
+    return angle_value  # Return as a float
+
+def pcm2angle_elbow(pcm: int) -> float:
+    """
+    Function that converts PCM for ELBOW servo to angle.
+    
+    :param pcm: PCM value [550, 2400]
+    :return: Corresponding angle in radians.
+    """
+
+    angle_min = -PI/2
+    angle_max = PI/2
+
+    pcm_min = 550
+    pcm_max = 2400
+
+    angle_value = __calculate(pcm, angle_min, angle_max, pcm_min, pcm_max)
+
+    return angle_value  # Return as a float
 
 def create_joint_state_msg(positions):
     msg = JointState()
@@ -48,7 +151,7 @@ def joints_talker():
     rospy.loginfo(neck_tilt_value)
     pub_neck_tilt.publish(neck_tilt_value)
 
-    positions = [pcm2angle.body(z_next_value), 0, pcm2angle.head_tilt(neck_tilt_value), 0, 0]
+    positions = [pcm2angle_body(z_next_value), 0, pcm2angle_head_tilt(neck_tilt_value), 0, 0]
     msg = create_joint_state_msg(positions)
     pub_joint_states.publish(msg)
 
@@ -68,7 +171,7 @@ def joints_talker():
             rospy.loginfo(z_next_value)
             pub_body.publish(z_next_value)
 
-            positions = [pcm2angle.body(z_next_value), 0, 0, 0, 0]
+            positions = [pcm2angle_body(z_next_value), 0, 0, 0, 0]
             msg = create_joint_state_msg(positions)
             pub_joint_states.publish(msg)
 
@@ -86,7 +189,7 @@ def joints_talker():
                 rospy.loginfo(elbow_value)
                 pub_elbow.publish(elbow_value)
 
-                positions = [0, 0, 0, 0, pcm2angle.elbow(elbow_value)]
+                positions = [0, 0, 0, 0, pcm2angle_elbow(elbow_value)]
                 msg = create_joint_state_msg(positions)
                 pub_joint_states.publish(msg)
 
