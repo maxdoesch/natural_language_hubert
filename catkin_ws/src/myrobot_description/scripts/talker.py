@@ -4,6 +4,14 @@ import rospy
 from std_msgs.msg import UInt16
 import time
 
+# Body = 560 - 2330
+# HeadPan = 550 - 2340
+# HeadTilt = 950 - 2400
+# Shoulder = 750 - 2200
+# Elbow = 550 - 2400
+# Gripper = 550 - 2150
+
+
 def body_joint_talker():
     pub1 = rospy.Publisher('/servo_body', UInt16, queue_size=10)
     #pub2 = rospy.Publisher('/joint_states')
