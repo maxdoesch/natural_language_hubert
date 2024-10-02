@@ -37,7 +37,7 @@
     <child link="body_link"/>
     <origin xyz="0 0 0.055" rpy="0 0 0" />
     <axis xyz="0 0 1" />
-    <limit lower="0" upper="3.14" velocity="100" effort="100"/>
+    <limit lower="-1.57" upper="1.57" velocity="100" effort="100"/>
   </joint>
 
   <link name="body_link">
@@ -89,7 +89,7 @@
     <child link="neck_link"/>
     <origin xyz="0 0 0.025" rpy="0 0 0" />
     <axis xyz="0 0 1" />
-    <limit lower="0" upper="3.14" velocity="100" effort="100"/>
+    <limit lower="-1.57" upper="1.57" velocity="100" effort="100"/>
   </joint>
 
   <link name="neck_link">
@@ -114,18 +114,18 @@
   <joint name="cam_joint" type="revolute">
     <parent link="neck_link"/>
     <child link="cam_link"/>
-    <origin xyz="0 0 0.065" rpy="1.57 0 0" />
+    <origin xyz="0 0 0.065" rpy="-1.57 0 0" />
     <axis xyz="0 0 1" />
-    <limit lower="0" upper="3.14" velocity="100" effort="100"/>
+    <limit lower="-0.785" upper="1.57" velocity="100" effort="100"/>
   </joint>
 
 
   <!-- Here z => y and y => -z -->
   <link name="cam_link">
     <visual>
-      <origin xyz="0 0.0325 0" rpy="0 0 0"/>
+      <origin xyz="0 -0.0325 0" rpy="0 0 0"/>
       <geometry>
-        <box size="0.05 0.065 0.08"/>
+        <box size="0.05 -0.065 0.08"/>
       </geometry>
       <material name="white" />
     </visual>
@@ -146,7 +146,7 @@
     <child link="arm_link"/>
     <origin xyz="0.034 -0.108 0.045" rpy="1.57 0 0" />
     <axis xyz="0 0 1" />
-    <limit lower="0" upper="3.14" velocity="100" effort="100"/>
+    <limit lower="-0.26" upper="1.57" velocity="100" effort="100"/>
   </joint>
 
   <link name="arm_link">
@@ -176,7 +176,7 @@
     <child link="forearm_link"/>
     <origin xyz="0.015 -0.088 -0.005" rpy="0 0 0" />
     <axis xyz="0 0 1" />
-    <limit lower="0" upper="3.14" velocity="100" effort="100"/>
+    <limit lower="-1.57" upper="1.57" velocity="100" effort="100"/>
   </joint>
 
   <link name="forearm_link">
