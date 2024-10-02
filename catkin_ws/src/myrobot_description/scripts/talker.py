@@ -5,6 +5,8 @@ from std_msgs.msg import UInt16
 import time
 from sensor_msgs.msg import JointState
 
+#import pcm2angle
+
 # Body = 560 - 2330
 # HeadPan = 550 - 2340
 # HeadTilt = 950 - 2300
@@ -16,6 +18,16 @@ from sensor_msgs.msg import JointState
 
 # Always take robot's movements time into consideration
 
+def create_joint_state_msg(positions):
+    msg = JointState()
+    msg.header.stamp = rospy.Time.now()
+    msg.name = ['base_joint', 'neck_joint', 'cam_joint', 'shoulder_joint', 'elbow_joint']
+    msg.position = positions
+    msg.velocity = []
+    msg.effort = []
+
+    return msg
+
 def joints_talker():
     pub_body = rospy.Publisher('/servo_body', UInt16, queue_size=10)
 
@@ -23,7 +35,7 @@ def joints_talker():
 
     pub_elbow = rospy.Publisher('/servo_elbow', UInt16, queue_size=10)
 
-    pub_joint_states = rospy.Publisher('/joint_states', JointState, queue_size=10)
+    # pub_joint_states = rospy.Publisher('/joint_states', JointState, queue_size=10)
 
     rospy.init_node('body_joint_talker', anonymous=True)
     #rospy.init_node('neck_tilt_joint_talker', anonymous=True) # Apparently not needed, but I don't see why 
@@ -35,6 +47,11 @@ def joints_talker():
     pub_body.publish(z_next_value)
     rospy.loginfo(neck_tilt_value)
     pub_neck_tilt.publish(neck_tilt_value)
+
+    # positions = [pcm2angle.body(z_next_value), 0, pcm2angle.head_tilt(neck_tilt_value), 0, 0]
+    # msg = create_joint_state_msg(positions)
+    # pub_joint_states.publish(msg)
+
     time.sleep(5)
 
     detection = 0
@@ -50,6 +67,11 @@ def joints_talker():
 
             rospy.loginfo(z_next_value)
             pub_body.publish(z_next_value)
+
+            # positions = [pcm2angle.body(z_next_value), 0, 0, 0, 0]
+            # msg = create_joint_state_msg(positions)
+            # pub_joint_states.publish(msg)
+
             if z_next_value == 560:
                 time.sleep(5)
 
@@ -63,6 +85,10 @@ def joints_talker():
                 elbow_value = 2200
                 rospy.loginfo(elbow_value)
                 pub_elbow.publish(elbow_value)
+
+                # positions = [0, 0, 0, 0, pcm2angle.elbow(elbow_value)]
+                # msg = create_joint_state_msg(positions)
+                # pub_joint_states.publish(msg)
 
 if __name__ == '__main__':
     try:
