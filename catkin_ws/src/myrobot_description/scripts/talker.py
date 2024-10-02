@@ -5,7 +5,7 @@ from std_msgs.msg import UInt16
 import time
 from sensor_msgs.msg import JointState
 
-#import pcm2angle
+import pcm2angle
 
 # Body = 560 - 2330
 # HeadPan = 550 - 2340
