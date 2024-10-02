@@ -11,6 +11,7 @@ import time
 # Elbow = 550 - 2400
 # Gripper = 550 - 2150
 
+# Right angle value for the camera: 1300
 
 def body_joint_talker():
     pub1 = rospy.Publisher('/servo_body', UInt16, queue_size=10)
@@ -30,6 +31,8 @@ def body_joint_talker():
 
         rospy.loginfo(z_next_value)
         pub1.publish(z_next_value)
+        if z_next_value == 500:
+            time.sleep(5)
 
         z_next_value = z_next_value + 200
         time.sleep(2)
