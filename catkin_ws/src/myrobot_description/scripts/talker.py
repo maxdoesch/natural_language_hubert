@@ -2,20 +2,33 @@
 # license removed for brevity
 import rospy
 from std_msgs.msg import UInt16
+import time
 
-def talker():
-    pub = rospy.Publisher('/servo_elbow', UInt16, queue_size=10)
-    rospy.init_node('talker', anonymous=True)
+def body_joint_talker():
+    pub1 = rospy.Publisher('/servo_body', UInt16, queue_size=10)
+    #pub2 = rospy.Publisher('/joint_states')
+
+    rospy.init_node('body_joint_talker', anonymous=True)
     rate = rospy.Rate(10) # 10hz
-    while not rospy.is_shutdown():
-        z_int = int(input("Enter z value for the elbow (between 1000 and 2000?)"))
-        rospy.loginfo(z_int)
-        pub.publish(z_int)
 
+    z_mean_value = 1500
+    rospy.loginfo(z_mean_value)
+    pub1.publish(z_mean_value)
+
+    z_next_value = 1700
+    while not rospy.is_shutdown():
+        if z_next_value > 2350:
+            z_next_value = 500
+
+        rospy.loginfo(z_next_value)
+        pub1.publish(z_next_value)
+
+        z_next_value = z_next_value + 200
+        time.sleep(2)
         rate.sleep()
 
 if __name__ == '__main__':
     try:
-        talker()
+        body_joint_talker()
     except rospy.ROSInterruptException:
         pass
