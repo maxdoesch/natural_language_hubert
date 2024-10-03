@@ -2,6 +2,7 @@
 # license removed for brevity
 import rospy
 from std_msgs.msg import UInt16
+from std_msgs.msg import String
 import time
 from sensor_msgs.msg import JointState
 
@@ -131,6 +132,15 @@ def create_joint_state_msg(positions):
 
     return msg
 
+def callback(data):
+    rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
+    
+def label_listener():
+    rospy.init_node('label_listener', anonymous=True)
+
+    rospy.Subscriber("/label_topic", String, callback)
+
+
 def joints_talker():
     pub_body = rospy.Publisher('/servo_body', UInt16, queue_size=10)
 
@@ -200,5 +210,6 @@ def joints_talker():
 if __name__ == '__main__':
     try:
         joints_talker()
+        label_listener()
     except rospy.ROSInterruptException:
         pass
