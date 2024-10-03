@@ -197,38 +197,41 @@ def joints_talker():
     elbow_value = 1400
 
     while not rospy.is_shutdown():
-        while not coordinates_received:
+        if label_recieved:
+            while not coordinates_received:
 
-            z_next_value = z_next_value + 200
+                z_next_value = z_next_value + 200
 
-            if z_next_value > 2330:
-                z_next_value = 560
+                if z_next_value > 2330:
+                    z_next_value = 560
 
-            rospy.loginfo(z_next_value)
-            pub_body.publish(z_next_value)
+                rospy.loginfo(z_next_value)
+                pub_body.publish(z_next_value)
 
-            positions = [pcm2angle_body(z_next_value), 0, 0, 0, 0]
-            msg = create_joint_state_msg(positions)
-            pub_joint_states.publish(msg)
-
-            if z_next_value == 560:
-                time.sleep(5)
-                pub_joint_states.publish(msg)
-
-            time.sleep(2)
-            pub_joint_states.publish(msg)
-            rate.sleep()
-            pub_joint_states.publish(msg)
-
-        if coordinates_received:
-            if elbow_value != 2200:
-                elbow_value = 2200
-                rospy.loginfo(elbow_value)
-                pub_elbow.publish(elbow_value)
-
-                positions = [0, 0, 0, 0, pcm2angle_elbow(elbow_value)]
+                positions = [pcm2angle_body(z_next_value), 0, 0, 0, 0]
                 msg = create_joint_state_msg(positions)
                 pub_joint_states.publish(msg)
+
+                if z_next_value == 560:
+                    time.sleep(5)
+                    pub_joint_states.publish(msg)
+
+                time.sleep(2)
+                pub_joint_states.publish(msg)
+                rate.sleep()
+                pub_joint_states.publish(msg)
+
+            if coordinates_received:
+                if elbow_value != 2200:
+                    elbow_value = 2200
+                    rospy.loginfo(elbow_value)
+                    pub_elbow.publish(elbow_value)
+
+                    positions = [0, 0, 0, 0, pcm2angle_elbow(elbow_value)]
+                    msg = create_joint_state_msg(positions)
+                    pub_joint_states.publish(msg)
+
+                    label_recieved = False
 
 if __name__ == '__main__':
     try:
