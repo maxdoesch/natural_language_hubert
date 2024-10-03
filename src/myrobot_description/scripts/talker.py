@@ -5,8 +5,9 @@ from std_msgs.msg import UInt16
 from std_msgs.msg import String
 import time
 from sensor_msgs.msg import JointState
+from geometry_msgs.msg import Point
 
-#import pcm2angle
+#from pcm2angle import body
 
 # Body = 560 - 2330
 # HeadPan = 550 - 2340
@@ -132,16 +133,41 @@ def create_joint_state_msg(positions):
 
     return msg
 
-def callback(data):
+def coordinates_callback(data):
+
+    global coordinates_received
+
     rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
-    
+
+    coordinates_received = True
+
+def label_callback(data):
+
+    global label_recieved
+
+    rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
+
+    label_recieved = True
+
+def coordinates_listener():
+
+    rospy.init_node('coordinates_listener', anonymous=True)
+
+    rospy.Subscriber("/coordinates", Point, coordinates_callback)
+
+    rospy.spin()
+
 def label_listener():
+
     rospy.init_node('label_listener', anonymous=True)
 
-    rospy.Subscriber("/label_topic", String, callback)
+    rospy.Subscriber("/label_topic", Point, label_callback)
+
+    rospy.spin()
 
 
 def joints_talker():
+
     pub_body = rospy.Publisher('/servo_body', UInt16, queue_size=10)
 
     pub_neck_tilt = rospy.Publisher('/servo_neck_tilt', UInt16, queue_size=10)
@@ -155,7 +181,7 @@ def joints_talker():
     rate = rospy.Rate(10) # 10hz
 
     z_next_value = 1450 # Mean value would actually be 1425
-    neck_tilt_value = 1300
+    neck_tilt_value = 1300 
     rospy.loginfo(z_next_value)
     pub_body.publish(z_next_value)
     rospy.loginfo(neck_tilt_value)
@@ -168,11 +194,10 @@ def joints_talker():
     time.sleep(5)
     pub_joint_states.publish(msg)
 
-    detection = 0
     elbow_value = 1400
 
     while not rospy.is_shutdown():
-        while detection < 9:
+        while not coordinates_received:
 
             z_next_value = z_next_value + 200
 
@@ -195,9 +220,7 @@ def joints_talker():
             rate.sleep()
             pub_joint_states.publish(msg)
 
-            detection += 1
-
-        if detection == 9:
+        if coordinates_received:
             if elbow_value != 2200:
                 elbow_value = 2200
                 rospy.loginfo(elbow_value)
@@ -211,5 +234,6 @@ if __name__ == '__main__':
     try:
         joints_talker()
         label_listener()
+        coordinates_listener()
     except rospy.ROSInterruptException:
         pass
