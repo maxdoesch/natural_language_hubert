@@ -149,21 +149,21 @@ def label_callback(data):
 
     label_received = True
 
-def coordinates_listener():
+# def coordinates_listener():
 
-    rospy.init_node('coordinates_listener', anonymous=True)
+#     #rospy.init_node('coordinates_listener', anonymous=True)
 
-    rospy.Subscriber("/coordinates", Point, coordinates_callback)
+#     rospy.Subscriber("/coordinates", Point, coordinates_callback)
 
-    #rospy.spin()
+#     #rospy.spin()
 
-def label_listener():
+# def label_listener():
 
-    rospy.init_node('label_listener', anonymous=True)
+#     #rospy.init_node('label_listener', anonymous=True)
 
-    rospy.Subscriber("/label_topic", Point, label_callback)
+#     rospy.Subscriber("/label_topic", Point, label_callback)
 
-   #rospy.spin()
+#    #rospy.spin()
 
 
 def joints_talker():
@@ -178,6 +178,10 @@ def joints_talker():
     pub_elbow = rospy.Publisher('/servo_elbow', UInt16, queue_size=10)
 
     pub_joint_states = rospy.Publisher('/joint_states', JointState, queue_size=10)
+
+    sub_coordinates = rospy.Subscriber("/coordinates", Point, coordinates_callback)
+
+    sub_label = rospy.Subscriber("/label_topic", String, label_callback)
 
     rospy.init_node('body_joint_talker', anonymous=True)
     #rospy.init_node('neck_tilt_joint_talker', anonymous=True) # Apparently not needed, but I don't see why 
@@ -239,7 +243,5 @@ def joints_talker():
 if __name__ == '__main__':
     try:
         joints_talker()
-        label_listener()
-        coordinates_listener()
     except rospy.ROSInterruptException:
         pass
