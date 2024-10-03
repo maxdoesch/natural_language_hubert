@@ -156,6 +156,7 @@ def joints_talker():
     pub_joint_states.publish(msg)
 
     time.sleep(5)
+    pub_joint_states.publish(msg)
 
     detection = 0
     elbow_value = 1400
@@ -177,9 +178,12 @@ def joints_talker():
 
             if z_next_value == 560:
                 time.sleep(5)
+                pub_joint_states.publish(msg)
 
             time.sleep(2)
+            pub_joint_states.publish(msg)
             rate.sleep()
+            pub_joint_states.publish(msg)
 
             detection += 1
 
