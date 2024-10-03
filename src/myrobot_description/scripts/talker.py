@@ -137,7 +137,7 @@ def coordinates_callback(data):
 
     global coordinates_received
 
-    rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
+    rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.x)
 
     coordinates_received = True
 
@@ -204,7 +204,7 @@ def joints_talker():
     elbow_value = 1400
 
     while not rospy.is_shutdown():
-        if label_received == False:
+        if label_received:
             while not coordinates_received:
 
                 z_next_value = z_next_value + 200
