@@ -143,11 +143,11 @@ def coordinates_callback(data):
 
 def label_callback(data):
 
-    global label_recieved
+    global label_received
 
     rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
 
-    label_recieved = True
+    label_received = True
 
 def coordinates_listener():
 
@@ -197,7 +197,7 @@ def joints_talker():
     elbow_value = 1400
 
     while not rospy.is_shutdown():
-        if label_recieved:
+        if label_received:
             while not coordinates_received:
 
                 z_next_value = z_next_value + 200
@@ -231,7 +231,7 @@ def joints_talker():
                     msg = create_joint_state_msg(positions)
                     pub_joint_states.publish(msg)
 
-                    label_recieved = False
+                    label_received = False
 
 if __name__ == '__main__':
     try:
