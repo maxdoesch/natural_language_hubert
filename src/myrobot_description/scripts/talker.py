@@ -155,7 +155,7 @@ def coordinates_listener():
 
     rospy.Subscriber("/coordinates", Point, coordinates_callback)
 
-    rospy.spin()
+    #rospy.spin()
 
 def label_listener():
 
@@ -163,10 +163,13 @@ def label_listener():
 
     rospy.Subscriber("/label_topic", Point, label_callback)
 
-    rospy.spin()
+   #rospy.spin()
 
 
 def joints_talker():
+
+    coordinates_received = False
+    label_received = False
 
     pub_body = rospy.Publisher('/servo_body', UInt16, queue_size=10)
 
@@ -197,7 +200,7 @@ def joints_talker():
     elbow_value = 1400
 
     while not rospy.is_shutdown():
-        if label_received:
+        if label_received == False:
             while not coordinates_received:
 
                 z_next_value = z_next_value + 200
