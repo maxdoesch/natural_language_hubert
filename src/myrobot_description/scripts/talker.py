@@ -133,43 +133,30 @@ def create_joint_state_msg(positions):
 
     return msg
 
-def coordinates_callback(data):
+class Label_listener:
+    
+    def __init__(self):
+        self.sub = rospy.Subscriber("/label_topic", String, self.label_callback)
+        self.label_received = False
 
-    global coordinates_received
+    def label_callback(self, data):
 
-    rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.x)
+        rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
+        self.label_received = True
 
-    coordinates_received = True
+class Coordinates_listener:
 
-def label_callback(data):
+    def __init__(self):
+        self.sub = rospy.Subscriber("/coordinates", Point, self.coordinates_callback)
+        self.coordinates_received = False
 
-    global label_received
+    def coordinates_callback(self, data):
 
-    rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
-
-    label_received = True
-
-# def coordinates_listener():
-
-#     #rospy.init_node('coordinates_listener', anonymous=True)
-
-#     rospy.Subscriber("/coordinates", Point, coordinates_callback)
-
-#     #rospy.spin()
-
-# def label_listener():
-
-#     #rospy.init_node('label_listener', anonymous=True)
-
-#     rospy.Subscriber("/label_topic", Point, label_callback)
-
-#    #rospy.spin()
+        rospy.loginfo(rospy.get_caller_id() + "I heard %s, %s, %s", data.x, data.y, data.z)
+        self.coordinates_received = True
 
 
 def joints_talker():
-
-    coordinates_received = False
-    label_received = False
 
     pub_body = rospy.Publisher('/servo_body', UInt16, queue_size=10)
 
@@ -179,16 +166,17 @@ def joints_talker():
 
     pub_joint_states = rospy.Publisher('/joint_states', JointState, queue_size=10)
 
-    sub_coordinates = rospy.Subscriber("/coordinates", Point, coordinates_callback)
+    sub_coordinates = Coordinates_listener()
 
-    sub_label = rospy.Subscriber("/label_topic", String, label_callback)
+    sub_label = Label_listener()
 
     rospy.init_node('body_joint_talker', anonymous=True)
-    #rospy.init_node('neck_tilt_joint_talker', anonymous=True) # Apparently not needed, but I don't see why 
+
     rate = rospy.Rate(10) # 10hz
 
     z_next_value = 1450 # Mean value would actually be 1425
     neck_tilt_value = 1300 
+
     rospy.loginfo(z_next_value)
     pub_body.publish(z_next_value)
     rospy.loginfo(neck_tilt_value)
@@ -196,16 +184,16 @@ def joints_talker():
 
     positions = [pcm2angle_body(z_next_value), 0, pcm2angle_head_tilt(neck_tilt_value), 0, 0]
     msg = create_joint_state_msg(positions)
-    pub_joint_states.publish(msg)
 
     time.sleep(5)
+
     pub_joint_states.publish(msg)
 
     elbow_value = 1400
 
     while not rospy.is_shutdown():
-        if label_received:
-            while not coordinates_received:
+        if sub_label.label_received == True:
+            while sub_coordinates.coordinates_received == False:
 
                 z_next_value = z_next_value + 200
 
@@ -215,7 +203,7 @@ def joints_talker():
                 rospy.loginfo(z_next_value)
                 pub_body.publish(z_next_value)
 
-                positions = [pcm2angle_body(z_next_value), 0, 0, 0, 0]
+                positions = [pcm2angle_body(z_next_value), 0, pcm2angle_head_tilt(neck_tilt_value), 0, 0]
                 msg = create_joint_state_msg(positions)
                 pub_joint_states.publish(msg)
 
@@ -225,20 +213,24 @@ def joints_talker():
 
                 time.sleep(2)
                 pub_joint_states.publish(msg)
-                rate.sleep()
                 pub_joint_states.publish(msg)
 
-            if coordinates_received:
+            if sub_coordinates.coordinates_received == True:
                 if elbow_value != 2200:
                     elbow_value = 2200
-                    rospy.loginfo(elbow_value)
-                    pub_elbow.publish(elbow_value)
+                rospy.loginfo(elbow_value)
+                pub_elbow.publish(elbow_value)
 
-                    positions = [0, 0, 0, 0, pcm2angle_elbow(elbow_value)]
-                    msg = create_joint_state_msg(positions)
-                    pub_joint_states.publish(msg)
+                positions = [pcm2angle_body(z_next_value), 0, pcm2angle_head_tilt(neck_tilt_value), 0, pcm2angle_elbow(elbow_value)]
+                msg = create_joint_state_msg(positions)
+                pub_joint_states.publish(msg)
 
-                    label_received = False
+                time.sleep(2)
+
+                sub_label.label_received = False
+                sub_coordinates.coordinates_received = False
+
+        rate.sleep()
 
 if __name__ == '__main__':
     try:
