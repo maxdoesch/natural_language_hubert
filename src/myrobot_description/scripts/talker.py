@@ -49,7 +49,7 @@ def pcm2angle_body(pcm: int) -> float:
 
     angle_value = __calculate(pcm, angle_min, angle_max, pcm_min, pcm_max)
 
-    return -angle_value  # Return as a float
+    return angle_value  # Return as a float
 
 def pcm2angle_head_pan(pcm: int) -> float:
     """
@@ -67,7 +67,7 @@ def pcm2angle_head_pan(pcm: int) -> float:
 
     angle_value = __calculate(pcm, angle_min, angle_max, pcm_min, pcm_max)
 
-    return -angle_value  # Return as a float
+    return angle_value  # Return as a float
 
 def pcm2angle_head_tilt(pcm: int) -> float:
     """
@@ -85,7 +85,7 @@ def pcm2angle_head_tilt(pcm: int) -> float:
 
     angle_value = __calculate(pcm, angle_min, angle_max, pcm_min, pcm_max)
 
-    return -angle_value  # Return as a float
+    return angle_value  # Return as a float
 
 def pcm2angle_shoulder(pcm: int) -> float:
     """

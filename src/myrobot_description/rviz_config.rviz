@@ -116,7 +116,7 @@ Visualization Manager:
       Enabled: true
       Filter (blacklist): ""
       Filter (whitelist): ""
-      Frame Timeout: 15
+      Frame Timeout: 9999999
       Frames:
         All Enabled: true
         arm_link:
@@ -185,7 +185,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 3.5294711589813232
+      Distance: 1.8626145124435425
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -193,17 +193,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 0.04287918657064438
-        Y: 0.1890624463558197
-        Z: -0.3117399513721466
+        X: 1.7136600017547607
+        Y: 0.9606685042381287
+        Z: 0.1332477331161499
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.38039809465408325
+      Pitch: 0.43039804697036743
       Target Frame: <Fixed Frame>
-      Yaw: 0.4753979742527008
+      Yaw: 2.8254005908966064
     Saved: ~
 Window Geometry:
   Displays:
@@ -221,5 +221,5 @@ Window Geometry:
   Views:
     collapsed: false
   Width: 1200
-  X: 353
-  Y: 746
+  X: 650
+  Y: 170
