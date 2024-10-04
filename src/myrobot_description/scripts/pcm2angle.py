@@ -9,7 +9,7 @@ def __calculate(pcm, angle_min, angle_max, pcm_min, pcm_max) -> float:
     # Linear interpolation from PCM to angle
     angle_value = angle_min + (pcm - pcm_min) * (angle_max - angle_min) / (pcm_max - pcm_min)
 
-    return angle_value  # Return the angle as a float
+    return -angle_value  # Return the angle as a float
 
 def body(pcm: int) -> float:
     """
@@ -27,7 +27,7 @@ def body(pcm: int) -> float:
 
     angle_value = __calculate(pcm, angle_min, angle_max, pcm_min, pcm_max)
 
-    return angle_value  # Return as a float
+    return -angle_value  # Return as a float
 
 def head_pan(pcm: int) -> float:
     """
@@ -45,7 +45,7 @@ def head_pan(pcm: int) -> float:
 
     angle_value = __calculate(pcm, angle_min, angle_max, pcm_min, pcm_max)
 
-    return angle_value  # Return as a float
+    return -angle_value  # Return as a float
 
 def head_tilt(pcm: int) -> float:
     """
@@ -63,7 +63,7 @@ def head_tilt(pcm: int) -> float:
 
     angle_value = __calculate(pcm, angle_min, angle_max, pcm_min, pcm_max)
 
-    return angle_value  # Return as a float
+    return -angle_value  # Return as a float
 
 def shoulder(pcm: int) -> float:
     """
@@ -81,7 +81,7 @@ def shoulder(pcm: int) -> float:
 
     angle_value = __calculate(pcm, angle_min, angle_max, pcm_min, pcm_max)
 
-    return angle_value  # Return as a float
+    return -angle_value  # Return as a float
 
 def elbow(pcm: int) -> float:
     """
@@ -99,4 +99,4 @@ def elbow(pcm: int) -> float:
 
     angle_value = __calculate(pcm, angle_min, angle_max, pcm_min, pcm_max)
 
-    return angle_value  # Return as a float
+    return -angle_value  # Return as a float

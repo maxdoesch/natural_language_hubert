@@ -31,7 +31,7 @@ def __calculate(pcm, angle_min, angle_max, pcm_min, pcm_max) -> float:
     # Linear interpolation from PCM to angle
     angle_value = angle_min + (pcm - pcm_min) * (angle_max - angle_min) / (pcm_max - pcm_min)
 
-    return angle_value  # Return the angle as a float
+    return -angle_value  # Return the angle as a float
 
 def pcm2angle_body(pcm: int) -> float:
     """
@@ -49,7 +49,7 @@ def pcm2angle_body(pcm: int) -> float:
 
     angle_value = __calculate(pcm, angle_min, angle_max, pcm_min, pcm_max)
 
-    return angle_value  # Return as a float
+    return -angle_value  # Return as a float
 
 def pcm2angle_head_pan(pcm: int) -> float:
     """
@@ -67,7 +67,7 @@ def pcm2angle_head_pan(pcm: int) -> float:
 
     angle_value = __calculate(pcm, angle_min, angle_max, pcm_min, pcm_max)
 
-    return angle_value  # Return as a float
+    return -angle_value  # Return as a float
 
 def pcm2angle_head_tilt(pcm: int) -> float:
     """
@@ -85,7 +85,7 @@ def pcm2angle_head_tilt(pcm: int) -> float:
 
     angle_value = __calculate(pcm, angle_min, angle_max, pcm_min, pcm_max)
 
-    return angle_value  # Return as a float
+    return -angle_value  # Return as a float
 
 def pcm2angle_shoulder(pcm: int) -> float:
     """
@@ -103,7 +103,7 @@ def pcm2angle_shoulder(pcm: int) -> float:
 
     angle_value = __calculate(pcm, angle_min, angle_max, pcm_min, pcm_max)
 
-    return angle_value  # Return as a float
+    return -angle_value  # Return as a float
 
 def pcm2angle_elbow(pcm: int) -> float:
     """
@@ -121,7 +121,8 @@ def pcm2angle_elbow(pcm: int) -> float:
 
     angle_value = __calculate(pcm, angle_min, angle_max, pcm_min, pcm_max)
 
-    return angle_value  # Return as a float
+    return -angle_value  # Return as a float
+
 
 def create_joint_state_msg(positions):
     msg = JointState()
@@ -137,7 +138,7 @@ def coordinates_callback(data):
 
     global coordinates_received
 
-    rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.x)
+    rospy.loginfo(rospy.get_caller_id() + "I heard %s, %s, %s", data.x, data.y, data.z)
 
     coordinates_received = True
 
