@@ -27,7 +27,7 @@ def body(pcm: int) -> float:
 
     angle_value = __calculate(pcm, angle_min, angle_max, pcm_min, pcm_max)
 
-    return -angle_value  # Return as a float
+    return angle_value  # Return as a float
 
 def head_pan(pcm: int) -> float:
     """
@@ -45,7 +45,7 @@ def head_pan(pcm: int) -> float:
 
     angle_value = __calculate(pcm, angle_min, angle_max, pcm_min, pcm_max)
 
-    return -angle_value  # Return as a float
+    return angle_value  # Return as a float
 
 def head_tilt(pcm: int) -> float:
     """
@@ -63,7 +63,7 @@ def head_tilt(pcm: int) -> float:
 
     angle_value = __calculate(pcm, angle_min, angle_max, pcm_min, pcm_max)
 
-    return -angle_value  # Return as a float
+    return angle_value  # Return as a float
 
 def shoulder(pcm: int) -> float:
     """
