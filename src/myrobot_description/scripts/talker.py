@@ -173,6 +173,7 @@ class Listener:
         self.label = str(data.data)
         print(self.label)
         self.label_received = True
+        self.coordinates_received = False
 
     def coordinates_callback(self, data):
         
@@ -252,7 +253,7 @@ def joints_talker():
                 pub_joint_states.publish(msg)
 
             if sub_listener.coordinates_received == True:
-                
+
                 sub_listener.label_received = False
                 sub_listener.coordinates_received = False
 
