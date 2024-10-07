@@ -1,10 +1,5 @@
 <launch>
-    <!-- Launch the camera_publisher node -->
-    <node pkg="rosrun" type="camera_publisher.py" name="camera_publisher" output="screen" />
-
-    <!-- Launch the hubert_ov_seg node -->
-    <node pkg="rosrun" type="hubert_ov_seg.py" name="hubert_ov_seg" output="screen" />
-
-    <!-- Launch the rqt_image_view tool -->
-    <node pkg="rqt_image_view" type="rqt_image_view" name="rqt_image_view" output="screen" />
+    <node name="camera_publisher" pkg="hubert_ov_seg" type="camera_publisher.py" output="screen"/>
+    <node name="hubert_ov_seg" pkg="hubert_ov_seg" type="hubert_ov_seg.py" output="screen"/>
+    <node pkg="rqt_gui" type="rqt_gui" name="rqt_gui" output="screen" />
 </launch>
