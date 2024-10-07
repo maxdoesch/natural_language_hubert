@@ -1,3 +1,5 @@
 <launch>
-
+    <node name="camera_publisher" pkg="hubert_ov_seg" type="camera_publisher.py" output="screen"/>
+    <node name="hubert_ov_seg" pkg="hubert_ov_seg" type="hubert_ov_seg.py" output="screen"/>
+    <node pkg="rqt_gui" type="rqt_gui" name="rqt_gui" output="screen" />
 </launch>
