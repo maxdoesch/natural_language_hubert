@@ -171,6 +171,7 @@ class Listener:
     def label_callback(self, data):
         rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
         self.label = str(data.data)
+        print(self.label)
         self.label_received = True
 
     def coordinates_callback(self, data):
@@ -180,6 +181,8 @@ class Listener:
         if data.label == self.label:
             self.coordinates_received = True
             print('fjdskljfkls')
+        else:
+            self.coordinates_received = False
 
     
 
