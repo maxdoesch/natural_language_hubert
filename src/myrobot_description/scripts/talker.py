@@ -180,6 +180,7 @@ def joints_talker():
 
     z_next_value = 1450 # Mean value would actually be 1425
     neck_tilt_value = 1300 
+    elbow_value = 1400
 
     rospy.loginfo(z_next_value)
     pub_body.publish(z_next_value)
@@ -193,7 +194,7 @@ def joints_talker():
 
     pub_joint_states.publish(msg)
 
-    elbow_value = 1400
+    
 
     while not rospy.is_shutdown():
         rospy.loginfo(neck_tilt_value)
@@ -220,10 +221,10 @@ def joints_talker():
                 pub_joint_states.publish(msg)
 
                 if z_next_value == 560:
-                    time.sleep(7)
+                    time.sleep(8)
                     pub_joint_states.publish(msg)
 
-                time.sleep(3)
+                time.sleep(5)
                 pub_joint_states.publish(msg)
                 pub_joint_states.publish(msg)
 
