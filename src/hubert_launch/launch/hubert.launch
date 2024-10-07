@@ -32,6 +32,6 @@
         <param name="baud" value="57600"/>
     </node>
 
-    <node pkg="myrobot_description" type="talker.py" name="robot_demo"/>
+    <node pkg="myrobot_description" type="talker.py" name="robot_demo" output="screen"/>
 
 </launch>
