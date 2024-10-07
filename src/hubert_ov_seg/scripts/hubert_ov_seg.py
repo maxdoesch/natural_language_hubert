@@ -54,6 +54,7 @@ class HuberOVSeg:
         self.processing = False
 
         self.latest_label = None
+        self.new_label = False
         
         self.process_rate = rospy.Rate(10)
         rospy.Timer(rospy.Duration(1.0/10), self.process_image)
@@ -62,7 +63,10 @@ class HuberOVSeg:
         self.latest_image = msg
 
     def label_callback(self, msg):
-        self.latest_label = msg.data
+
+        if msg.data != self.latest_label:
+            self.latest_label = msg.data
+            self.new_label = True
 
         print(self.latest_label)
 
@@ -84,7 +88,10 @@ class HuberOVSeg:
 
                     com_point = Point(x=com_coordinates[0], y=com_coordinates[1])
 
-                    self.coordinate_publisher.publish(com_point)
+                    if not self.new_label:
+                        self.coordinate_publisher.publish(com_point)
+                    else:
+                        self.new_label = False
 
                     continue
 
