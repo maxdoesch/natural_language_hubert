@@ -171,6 +171,7 @@ class Listener:
     def label_callback(self, data):
         rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
         self.label = str(data.data)
+        print(self.label)
         self.label_received = True
 
     def coordinates_callback(self, data):
@@ -259,6 +260,7 @@ def joints_talker():
 
                 sub_listener.label_received = False
                 sub_listener.coordinates_received = False
+                time.sleep(0.5)
 
         rate.sleep()
 
