@@ -181,6 +181,8 @@ class Listener:
         if data.label == self.label:
             self.coordinates_received = True
             print('fjdskljfkls')
+        else:
+            self.coordinates_received = False
 
     
 
@@ -262,15 +264,6 @@ def joints_talker():
                 msg = create_joint_state_msg(positions)
                 pub_joint_states.publish(msg)
 
-<<<<<<< HEAD
-                time.sleep(2)
-
-                sub_listener.label_received = False
-                sub_listener.coordinates_received = False
-                time.sleep(0.5)
-
-=======
->>>>>>> 397522e12642e7db46163d0bc42b7ea6791790ee
         rate.sleep()
 
 if __name__ == '__main__':
