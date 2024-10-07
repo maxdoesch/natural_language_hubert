@@ -249,6 +249,7 @@ def joints_talker():
                 pub_joint_states.publish(msg)
 
             if sub_listener.coordinates_received == True:
+                
                 sub_listener.label_received = False
                 sub_listener.coordinates_received = False
 
