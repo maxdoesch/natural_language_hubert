@@ -7,6 +7,10 @@ import time
 from sensor_msgs.msg import JointState
 from geometry_msgs.msg import Point
 
+import pcm2angle
+
+print(pcm2angle.body(2000))
+
 # Body = 560 - 2330
 # HeadPan = 550 - 2340
 # HeadTilt = 950 - 2300
@@ -154,11 +158,6 @@ class Coordinates_listener:
         rospy.loginfo(rospy.get_caller_id() + "I heard %s, %s, %s", data.x, data.y, data.z)
         self.coordinates_received = True
 
-    def reset(self):
-        self.sub = rospy.Subscriber("/coordinates", Point, self.coordinates_callback)
-        self.coordinates_received = False
-
-
 
 def joints_talker():
 
@@ -180,32 +179,23 @@ def joints_talker():
 
     z_next_value = 1450 # Mean value would actually be 1425
     neck_tilt_value = 1300 
-    elbow_value = 1400
 
     rospy.loginfo(z_next_value)
     pub_body.publish(z_next_value)
     rospy.loginfo(neck_tilt_value)
     pub_neck_tilt.publish(neck_tilt_value)
 
-    positions = [pcm2angle_body(z_next_value), 0, pcm2angle_head_tilt(neck_tilt_value), 0, pcm2angle_elbow(elbow_value)]
+    positions = [pcm2angle_body(z_next_value), 0, pcm2angle_head_tilt(neck_tilt_value), 0, 0]
     msg = create_joint_state_msg(positions)
 
     time.sleep(5)
 
     pub_joint_states.publish(msg)
 
-    
+    elbow_value = 1400
 
     while not rospy.is_shutdown():
-        rospy.loginfo(neck_tilt_value)
-        pub_neck_tilt.publish(neck_tilt_value)
-
         if sub_label.label_received == True:
-
-            elbow_value = 1400
-            rospy.loginfo(elbow_value)
-            pub_elbow.publish(elbow_value)
-
             while sub_coordinates.coordinates_received == False:
 
                 z_next_value = z_next_value + 200
@@ -216,15 +206,15 @@ def joints_talker():
                 rospy.loginfo(z_next_value)
                 pub_body.publish(z_next_value)
 
-                positions = [pcm2angle_body(z_next_value), 0, pcm2angle_head_tilt(neck_tilt_value), 0, pcm2angle_elbow(elbow_value)]
+                positions = [pcm2angle_body(z_next_value), 0, pcm2angle_head_tilt(neck_tilt_value), 0, 0]
                 msg = create_joint_state_msg(positions)
                 pub_joint_states.publish(msg)
 
                 if z_next_value == 560:
-                    time.sleep(8)
+                    time.sleep(5)
                     pub_joint_states.publish(msg)
 
-                time.sleep(5)
+                time.sleep(2)
                 pub_joint_states.publish(msg)
                 pub_joint_states.publish(msg)
 
@@ -241,7 +231,7 @@ def joints_talker():
                 time.sleep(2)
 
                 sub_label.label_received = False
-                sub_coordinates.reset()
+                sub_coordinates.coordinates_received = False
 
         rate.sleep()
 
