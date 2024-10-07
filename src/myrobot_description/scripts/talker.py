@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 # license removed for brevity
 import rospy
+import copy
 from std_msgs.msg import UInt16
 from std_msgs.msg import String
 import time
 from sensor_msgs.msg import JointState
 from geometry_msgs.msg import Point
+
+from hubert_launch.msg import LabeledPoint
 
 # Body = 560 - 2330
 # HeadPan = 550 - 2340
@@ -132,47 +135,66 @@ def create_joint_state_msg(positions):
 
     return msg
 
-class Label_listener:
+# class Label_listener:
     
+#     def __init__(self):
+#         self.sub = rospy.Subscriber("/label_topic", String, self.label_callback)
+#         self.label_received = False
+
+#     def label_callback(self, data):
+#         rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
+#         self.label_received = True
+
+# class Coordinates_listener:
+
+#     def __init__(self, label="none"):
+#         self.sub = rospy.Subscriber("/coordinates", Point, self.coordinates_callback)
+#         self.coordinates_received = False
+#         self.label = label
+
+#     def coordinates_callback(self, data):
+
+#         rospy.loginfo(rospy.get_caller_id() + "I heard %s, %s, %s", data.x, data.y, data.z)
+#         self.coordinates_received = True
+
+#     def reset(self):
+#         self.sub = rospy.Subscriber("/coordinates", LabeledPoint, self.coordinates_callback)
+        # self.coordinates_received = False
+
+class Listener:
     def __init__(self):
-        self.sub = rospy.Subscriber("/label_topic", String, self.label_callback)
+        self.sub_label = rospy.Subscriber("/label_topic", String, self.label_callback)
+        self.sub_coords = rospy.Subscriber("/coordinates", LabeledPoint, self.coordinates_callback)
+        self.coordinates_received = False
         self.label_received = False
-
+    
     def label_callback(self, data):
-
         rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
+        self.label = str(data.data)
         self.label_received = True
 
-class Coordinates_listener:
-
-    def __init__(self):
-        self.sub = rospy.Subscriber("/coordinates", Point, self.coordinates_callback)
-        self.coordinates_received = False
-
     def coordinates_callback(self, data):
-
-        rospy.loginfo(rospy.get_caller_id() + "I heard %s, %s, %s", data.x, data.y, data.z)
-        self.coordinates_received = True
-
-    def reset(self):
-        self.sub = rospy.Subscriber("/coordinates", Point, self.coordinates_callback)
-        self.coordinates_received = False
-
-
+        
+        rospy.loginfo(rospy.get_caller_id() + "I heard %s, %s, %s", data.point.x, data.point.y, data.point.z)
+        if data.label == self.label:
+            self.coordinates_received = True
+    
 
 def joints_talker():
 
-    pub_body = rospy.Publisher('/servo_body', UInt16, queue_size=10)
+    pub_body = rospy.Publisher('/servo_body', UInt16, queue_size=10, latch=True)
 
-    pub_neck_tilt = rospy.Publisher('/servo_neck_tilt', UInt16, queue_size=10)
+    pub_neck_tilt = rospy.Publisher('/servo_neck_tilt', UInt16, queue_size=10, latch=True)
 
     pub_elbow = rospy.Publisher('/servo_elbow', UInt16, queue_size=10)
 
     pub_joint_states = rospy.Publisher('/joint_states', JointState, queue_size=10)
 
-    sub_coordinates = Coordinates_listener()
+    # sub_coordinates = Coordinates_listener()
 
-    sub_label = Label_listener()
+    # sub_label = Label_listener()
+
+    sub_listener = Listener()
 
     rospy.init_node('body_joint_talker', anonymous=True)
 
@@ -194,19 +216,14 @@ def joints_talker():
 
     pub_joint_states.publish(msg)
 
-    
-
     while not rospy.is_shutdown():
-        rospy.loginfo(neck_tilt_value)
-        pub_neck_tilt.publish(neck_tilt_value)
-
-        if sub_label.label_received == True:
+        if sub_listener.label_received == True:
 
             elbow_value = 1400
             rospy.loginfo(elbow_value)
             pub_elbow.publish(elbow_value)
 
-            while sub_coordinates.coordinates_received == False:
+            while sub_listener.coordinates_received == False:
 
                 z_next_value = z_next_value + 200
 
@@ -228,7 +245,7 @@ def joints_talker():
                 pub_joint_states.publish(msg)
                 pub_joint_states.publish(msg)
 
-            if sub_coordinates.coordinates_received == True:
+            if sub_listener.coordinates_received == True:
                 if elbow_value != 2200:
                     elbow_value = 2200
                 rospy.loginfo(elbow_value)
@@ -240,8 +257,8 @@ def joints_talker():
 
                 time.sleep(2)
 
-                sub_label.label_received = False
-                sub_coordinates.reset()
+                sub_listener.label_received = False
+                sub_listener.coordinates_received = False
 
         rate.sleep()
 

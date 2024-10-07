@@ -1,10 +1,11 @@
 import os
-
+import copy
 import rospy
 import torch
 from cv_bridge import CvBridge
 from sensor_msgs.msg import Image
 from std_msgs.msg import String
+from hubert_launch.msg import LabeledPoint
 from geometry_msgs.msg import Point
 
 from detectron2.config import get_cfg
@@ -47,7 +48,7 @@ class HuberOVSeg:
         cfg = setup_cfg()
         self.ov_seg_model = SlimFrozenSeg(cfg)
         self.mask_pub = rospy.Publisher('/mask_topic', Image, queue_size=1)
-        self.coordinate_publisher = rospy.Publisher('/coordinates', Point, queue_size=1)
+        self.coordinate_publisher = rospy.Publisher('/coordinates', LabeledPoint, queue_size=1)
         self.label_sub = rospy.Subscriber('/label_topic', String, self.label_callback, queue_size=1)
         self.image_sub = rospy.Subscriber('/image_topic', Image, self.image_callback, queue_size=1)
         self.latest_image = None
@@ -62,6 +63,7 @@ class HuberOVSeg:
         self.latest_image = msg
 
     def label_callback(self, msg):
+
         self.latest_label = msg.data
 
         print(self.latest_label)
@@ -69,7 +71,8 @@ class HuberOVSeg:
     def process_image(self, event):
         if self.latest_image is not None and not self.processing:
             if self.latest_label is not None:
-                self.ov_seg_model.set_label(self.latest_label)
+                current_label = copy.copy(self.latest_label)
+                self.ov_seg_model.set_label(current_label)
 
             self.processing = True
             cv2_image = self.cv2_bridge.imgmsg_to_cv2(self.latest_image, desired_encoding="bgr8")
@@ -82,9 +85,11 @@ class HuberOVSeg:
                 if segment['category_id'] == 0:
                     com_coordinates = get_instance_com(segment['id'], panoptic_seg)
 
-                    com_point = Point(x=com_coordinates[0], y=com_coordinates[1])
+                    labeled_point = LabeledPoint()
+                    labeled_point.point = Point(x=com_coordinates[0], y=com_coordinates[1])
+                    labeled_point.label = current_label
 
-                    self.coordinate_publisher.publish(com_point)
+                    self.coordinate_publisher.publish(labeled_point)
 
                     continue
 
