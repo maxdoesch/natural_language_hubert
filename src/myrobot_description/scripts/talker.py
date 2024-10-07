@@ -162,9 +162,9 @@ class Coordinates_listener:
 
 def joints_talker():
 
-    pub_body = rospy.Publisher('/servo_body', UInt16, queue_size=10)
+    pub_body = rospy.Publisher('/servo_body', UInt16, queue_size=10, latch=True)
 
-    pub_neck_tilt = rospy.Publisher('/servo_neck_tilt', UInt16, queue_size=10)
+    pub_neck_tilt = rospy.Publisher('/servo_neck_tilt', UInt16, queue_size=10, latch=True)
 
     pub_elbow = rospy.Publisher('/servo_elbow', UInt16, queue_size=10)
 
@@ -197,9 +197,6 @@ def joints_talker():
     
 
     while not rospy.is_shutdown():
-        rospy.loginfo(neck_tilt_value)
-        pub_neck_tilt.publish(neck_tilt_value)
-
         if sub_label.label_received == True:
 
             elbow_value = 1400
