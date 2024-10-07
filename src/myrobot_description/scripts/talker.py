@@ -7,10 +7,6 @@ import time
 from sensor_msgs.msg import JointState
 from geometry_msgs.msg import Point
 
-import pcm2angle
-
-print(pcm2angle.body(2000))
-
 # Body = 560 - 2330
 # HeadPan = 550 - 2340
 # HeadTilt = 950 - 2300
@@ -158,6 +154,11 @@ class Coordinates_listener:
         rospy.loginfo(rospy.get_caller_id() + "I heard %s, %s, %s", data.x, data.y, data.z)
         self.coordinates_received = True
 
+    def reset(self):
+        self.sub = rospy.Subscriber("/coordinates", Point, self.coordinates_callback)
+        self.coordinates_received = False
+
+
 
 def joints_talker():
 
@@ -195,6 +196,9 @@ def joints_talker():
     elbow_value = 1400
 
     while not rospy.is_shutdown():
+        rospy.loginfo(neck_tilt_value)
+        pub_neck_tilt.publish(neck_tilt_value)
+
         if sub_label.label_received == True:
 
             elbow_value = 1400
@@ -236,7 +240,7 @@ def joints_talker():
                 time.sleep(2)
 
                 sub_label.label_received = False
-                sub_coordinates.coordinates_received = False
+                sub_coordinates.reset()
 
         rate.sleep()
 
