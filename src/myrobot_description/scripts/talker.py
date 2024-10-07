@@ -185,7 +185,7 @@ def joints_talker():
     rospy.loginfo(neck_tilt_value)
     pub_neck_tilt.publish(neck_tilt_value)
 
-    positions = [pcm2angle_body(z_next_value), 0, pcm2angle_head_tilt(neck_tilt_value), 0, 0]
+    positions = [pcm2angle_body(z_next_value), 0, pcm2angle_head_tilt(neck_tilt_value), 0, pcm2angle_elbow(elbow_value)]
     msg = create_joint_state_msg(positions)
 
     time.sleep(5)
@@ -196,6 +196,11 @@ def joints_talker():
 
     while not rospy.is_shutdown():
         if sub_label.label_received == True:
+
+            elbow_value = 1400
+            rospy.loginfo(elbow_value)
+            pub_elbow.publish(elbow_value)
+
             while sub_coordinates.coordinates_received == False:
 
                 z_next_value = z_next_value + 200
@@ -206,15 +211,15 @@ def joints_talker():
                 rospy.loginfo(z_next_value)
                 pub_body.publish(z_next_value)
 
-                positions = [pcm2angle_body(z_next_value), 0, pcm2angle_head_tilt(neck_tilt_value), 0, 0]
+                positions = [pcm2angle_body(z_next_value), 0, pcm2angle_head_tilt(neck_tilt_value), 0, pcm2angle_elbow(elbow_value)]
                 msg = create_joint_state_msg(positions)
                 pub_joint_states.publish(msg)
 
                 if z_next_value == 560:
-                    time.sleep(5)
+                    time.sleep(7)
                     pub_joint_states.publish(msg)
 
-                time.sleep(2)
+                time.sleep(3)
                 pub_joint_states.publish(msg)
                 pub_joint_states.publish(msg)
 
