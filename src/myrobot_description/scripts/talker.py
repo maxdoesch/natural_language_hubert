@@ -7,7 +7,7 @@ import time
 from sensor_msgs.msg import JointState
 from geometry_msgs.msg import Point
 
-# import pcm2angle
+# from src.myrobot_description.scripts import pcm2angle
 
 # Body = 560 - 2330
 # HeadPan = 550 - 2340
