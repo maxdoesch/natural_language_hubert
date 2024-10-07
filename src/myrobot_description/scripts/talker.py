@@ -176,9 +176,12 @@ class Listener:
 
     def coordinates_callback(self, data):
         
-        rospy.loginfo(rospy.get_caller_id() + "I heard %s, %s, %s", data.point.x, data.point.y, data.point.z)
+        rospy.loginfo(rospy.get_caller_id() + "I heard %s, %s, %s, %s", data.point.x, data.point.y, data.point.z, data.label)
+        rospy.loginfo(rospy.get_caller_id() + "I want to hear %s", self.label)
         if data.label == self.label:
             self.coordinates_received = True
+            print('fjdskljfkls')
+
     
 
 def joints_talker():
@@ -247,6 +250,9 @@ def joints_talker():
                 pub_joint_states.publish(msg)
 
             if sub_listener.coordinates_received == True:
+                sub_listener.label_received = False
+                sub_listener.coordinates_received = False
+
                 if elbow_value != 2200:
                     elbow_value = 2200
                 rospy.loginfo(elbow_value)
@@ -256,12 +262,15 @@ def joints_talker():
                 msg = create_joint_state_msg(positions)
                 pub_joint_states.publish(msg)
 
+<<<<<<< HEAD
                 time.sleep(2)
 
                 sub_listener.label_received = False
                 sub_listener.coordinates_received = False
                 time.sleep(0.5)
 
+=======
+>>>>>>> 397522e12642e7db46163d0bc42b7ea6791790ee
         rate.sleep()
 
 if __name__ == '__main__':
