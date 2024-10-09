@@ -1,0 +1,14 @@
+controller_list:
+  - name: fake_hubert_arm_controller
+    type: $(arg fake_execution_type)
+    joints:
+      - base_joint
+      - shoulder_joint
+      - elbow_joint
+  - name: fake_hubert_hand_controller
+    type: $(arg fake_execution_type)
+    joints:
+      []
+initial:  # Define initial robot poses per group
+  - group: hubert_arm
+    pose: home
