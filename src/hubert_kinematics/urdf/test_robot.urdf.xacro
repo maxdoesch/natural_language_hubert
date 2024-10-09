@@ -9,7 +9,7 @@
   <link name="world" />
 
   <joint name="world_joint" type="fixed">
-    <origin xyz="1.5 1.0 0" rpy="0 0 0"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
     <parent link="world"/>
     <child link="base_link"/>        
   </joint>
@@ -104,13 +104,13 @@
       <material name="white" />
     </visual>
     <collision>
-      <origin xyz="0 0 0.325" rpy="0 0 0"/>
+      <origin xyz="0 0 0.0325" rpy="0 0 0"/>
       <geometry>
-        <box size="0.05 0.05 0.65" />
+        <box size="0.05 0.05 0.065"/>
       </geometry>
     </collision>
-    <xacro:inertial_box mass="0.5" x="0.05" y="0.05" z="0.65">
-      <origin xyz="0 0 0.325" rpy="0 0 0"/>
+    <xacro:inertial_box mass="0.5" x="0.05" y="0.05" z="0.065">
+      <origin xyz="0 0 0.0325" rpy="0 0 0"/>
     </xacro:inertial_box>
   </link>
 
@@ -133,13 +133,13 @@
       <material name="white" />
     </visual>
     <collision>
-      <origin xyz="0 0 0.325" rpy="0 0 0"/>
+      <origin xyz="0 -0.0325 0" rpy="0 0 0"/>
       <geometry>
-        <box size="0.05 0.08 0.65" />
+        <box size="0.05 -0.065 0.08" />
       </geometry>
     </collision>
-    <xacro:inertial_box mass="0.5" x="0.05" y="0.08" z="0.65">
-      <origin xyz="0 0 0.325" rpy="0 0 0"/>
+    <xacro:inertial_box mass="0.5" x="0.05" y="-0.065" z="0.08">
+      <origin xyz="0 -0.0325 0" rpy="0 0 0"/>
     </xacro:inertial_box>
   </link>
 
@@ -161,13 +161,13 @@
       <material name="white" />
     </visual>
     <collision>
-      <origin xyz="0 0 -0.044" rpy="0 0 0"/>
+      <origin xyz="0 -0.044 0" rpy="0 0 0"/>
       <geometry>
-        <box size="0.025 0.025 0.088" />
+        <box size="0.025 0.088 0.025"/>
       </geometry>
     </collision>
-    <xacro:inertial_box mass="0.5" x="0.025" y="0.025" z="0.088">
-      <origin xyz="0 0 -0.044" rpy="0 0 0"/>
+    <xacro:inertial_box mass="0.5" x="0.025" y="0.088" z="0.025">
+      <origin xyz="0 -0.044 0" rpy="0 0 0"/>
     </xacro:inertial_box>
   </link>
 
@@ -204,12 +204,12 @@
   <!-- Axis values to modify -->
   <joint name="end_joint" type="fixed">
     <parent link="forearm_link"/>
-    <child link="end_link"/>
+    <child link="end_effector"/>
     <origin xyz="0 -0.15 0" rpy="0 0 0" />
     <axis xyz="0 0 0" />
   </joint>
 
-  <link name="end_link">
+  <link name="end_effector">
     <visual>
       <origin xyz="0 -0.0125 0" rpy="0 0 0"/>
       <geometry>
@@ -218,13 +218,13 @@
       <material name="white" />
     </visual>
     <collision>
-      <origin xyz="0 0 -0.0125" rpy="0 0 0"/>
+      <origin xyz="0 -0.0125 0" rpy="0 0 0"/>
       <geometry>
-        <box size="0.025 0.05 0.025" />
+        <box size="0.025 0.025 0.05"/>
       </geometry>
     </collision>
-    <xacro:inertial_box mass="0.5" x="0.025" y="0.05" z="0.025">
-      <origin xyz="0 0 -0.0125" rpy="0 0 0"/>
+    <xacro:inertial_box mass="0.5" x="0.025" y="0.025" z="0.05">
+      <origin xyz="0 -0.0125 0" rpy="0 0 0"/>
     </xacro:inertial_box>
   </link>
 
