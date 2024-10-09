@@ -1,0 +1,231 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="hubert_robot">
+
+  <!-- Define Pi -->
+  <xacro:property name="PI" value="3.141592653589793" />
+
+  <xacro:include filename="test_include.xacro" />
+
+  <link name="world" />
+
+  <joint name="world_joint" type="fixed">
+    <origin xyz="1.5 1.0 0" rpy="0 0 0"/>
+    <parent link="world"/>
+    <child link="base_link"/>        
+  </joint>
+
+
+  <link name="base_link">
+    <visual>
+      <origin xyz="0 0 0.0275" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.08 0.08 0.055" />
+      </geometry>
+      <material name="white" />
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.0275" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.08 0.08 0.055" />
+      </geometry>
+    </collision>
+    <xacro:inertial_box mass="0.5" x="0.08" y="0.08" z="0.055">
+      <origin xyz="0 0 0.0275" rpy="0 0 0"/>
+    </xacro:inertial_box>
+  </link>
+
+
+  <joint name="base_joint" type="revolute">
+    <parent link="base_link"/>
+    <child link="body_link"/>
+    <origin xyz="0 0 0.055" rpy="0 0 0" />
+    <axis xyz="0 0 1" />
+    <limit lower="-${PI/2}" upper="${PI/2}" velocity="100" effort="100"/>
+  </joint>
+
+  <link name="body_link">
+    <visual>
+      <origin xyz="0 0 0.1575" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.03 0.05 0.315"/>
+      </geometry>
+      <material name="white" />
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.1575" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.03 0.05 0.315" />
+      </geometry>
+    </collision>
+    <xacro:inertial_box mass="0.5" x="0.03" y="0.05" z="0.315">
+      <origin xyz="0 0 0.1575" rpy="0 0 0"/>
+    </xacro:inertial_box>
+  </link>
+
+  <joint name="chest_joint" type="fixed">
+    <parent link="body_link"/>
+    <child link="shoulder_link"/>
+    <origin xyz="0 0 0.315" rpy="0 0 0" />
+  </joint>  
+
+  <link name="shoulder_link">
+    <visual>
+      <origin xyz="0 0 0.0125" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.04 0.24 0.025"/>
+      </geometry>
+      <material name="white" />
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.0125" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.04 0.24 0.025" />
+      </geometry>
+    </collision>
+    <xacro:inertial_box mass="0.5" x="0.04" y="0.24" z="0.025">
+      <origin xyz="0 0 0.0125" rpy="0 0 0"/>
+    </xacro:inertial_box>
+  </link>
+
+  <joint name="neck_joint" type="revolute">
+    <parent link="shoulder_link"/>
+    <child link="neck_link"/>
+    <origin xyz="0 0 0.025" rpy="0 0 0" />
+    <axis xyz="0 0 1" />
+    <limit lower="-${PI/2}" upper="${PI/2}" velocity="100" effort="100"/>
+  </joint>
+
+  <link name="neck_link">
+    <visual>
+      <origin xyz="0 0 0.0325" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.05 0.05 0.065"/>
+      </geometry>
+      <material name="white" />
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.325" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.05 0.05 0.65" />
+      </geometry>
+    </collision>
+    <xacro:inertial_box mass="0.5" x="0.05" y="0.05" z="0.65">
+      <origin xyz="0 0 0.325" rpy="0 0 0"/>
+    </xacro:inertial_box>
+  </link>
+
+  <joint name="cam_joint" type="revolute">
+    <parent link="neck_link"/>
+    <child link="cam_link"/>
+    <origin xyz="0 0 0.065" rpy="-1.57 0 0" />
+    <axis xyz="0 0 1" />
+    <limit lower="-${PI/4}" upper="${PI/2}" velocity="100" effort="100"/>
+  </joint>
+
+
+  <!-- Here z => y and y => -z -->
+  <link name="cam_link">
+    <visual>
+      <origin xyz="0 -0.0325 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.05 -0.065 0.08"/>
+      </geometry>
+      <material name="white" />
+    </visual>
+    <collision>
+      <origin xyz="0 0 0.325" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.05 0.08 0.65" />
+      </geometry>
+    </collision>
+    <xacro:inertial_box mass="0.5" x="0.05" y="0.08" z="0.65">
+      <origin xyz="0 0 0.325" rpy="0 0 0"/>
+    </xacro:inertial_box>
+  </link>
+
+
+  <joint name="shoulder_joint" type="revolute">
+    <parent link="shoulder_link"/>
+    <child link="arm_link"/>
+    <origin xyz="0.034 -0.108 0.045" rpy="1.57 0 0" />
+    <axis xyz="0 0 1" />
+    <limit lower="-${PI/6}" upper="${PI/2}" velocity="100" effort="100"/>
+  </joint>
+
+  <link name="arm_link">
+    <visual>
+      <origin xyz="0 -0.044 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.025 0.088 0.025"/>
+      </geometry>
+      <material name="white" />
+    </visual>
+    <collision>
+      <origin xyz="0 0 -0.044" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.025 0.025 0.088" />
+      </geometry>
+    </collision>
+    <xacro:inertial_box mass="0.5" x="0.025" y="0.025" z="0.088">
+      <origin xyz="0 0 -0.044" rpy="0 0 0"/>
+    </xacro:inertial_box>
+  </link>
+
+
+  <!-- Origin values to modify -->
+  <!-- Should the origin be rotated again as the last joint already is? -->
+  <joint name="elbow_joint" type="revolute">
+    <parent link="arm_link"/>
+    <child link="forearm_link"/>
+    <origin xyz="0.015 -0.088 -0.005" rpy="0 0 0" />
+    <axis xyz="0 0 1" />
+    <limit lower="-${PI/2}" upper="${PI/2}" velocity="100" effort="100"/>
+  </joint>
+
+  <link name="forearm_link">
+    <visual>
+      <origin xyz="0 -0.075 0 " rpy="0 0 0"/>
+      <geometry>
+        <box size="0.025 0.15 0.025"/>
+      </geometry>
+      <material name="white" />
+    </visual>
+    <collision>
+      <origin xyz="0 -0.075 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.025 0.15 0.025" />
+      </geometry>
+    </collision>
+    <xacro:inertial_box mass="0.5" x="0.025" y="0.025" z="0.204">
+      <origin xyz="0 0 -0.102" rpy="0 0 0"/>
+    </xacro:inertial_box>
+  </link>
+
+  <!-- Axis values to modify -->
+  <joint name="end_joint" type="fixed">
+    <parent link="forearm_link"/>
+    <child link="end_link"/>
+    <origin xyz="0 -0.15 0" rpy="0 0 0" />
+    <axis xyz="0 0 0" />
+  </joint>
+
+  <link name="end_link">
+    <visual>
+      <origin xyz="0 -0.0125 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.025 0.025 0.05"/>
+      </geometry>
+      <material name="white" />
+    </visual>
+    <collision>
+      <origin xyz="0 0 -0.0125" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.025 0.05 0.025" />
+      </geometry>
+    </collision>
+    <xacro:inertial_box mass="0.5" x="0.025" y="0.05" z="0.025">
+      <origin xyz="0 0 -0.0125" rpy="0 0 0"/>
+    </xacro:inertial_box>
+  </link>
+
+</robot>
