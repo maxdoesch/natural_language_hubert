@@ -10,17 +10,11 @@
     <!--CHAINS: When a chain is specified, all the links along the chain (including endpoints) are included in the group. Additionally, all the joints that are parents to included links are also included. This means that joints along the chain and the parent joint of the base link are included in the group-->
     <!--SUBGROUPS: Groups can also be formed by referencing to already defined group names-->
     <group name="hubert_arm">
-        <link name="base_link"/>
-        <link name="body_link"/>
-        <link name="shoulder_link"/>
-        <link name="arm_link"/>
-        <link name="forearm_link"/>
-        <link name="end_effector"/>
-        <joint name="world_joint"/>
         <joint name="base_joint"/>
         <joint name="chest_joint"/>
         <joint name="shoulder_joint"/>
         <joint name="elbow_joint"/>
+        <joint name="virtual_joint"/>
         <joint name="end_joint"/>
     </group>
     <group name="hubert_hand">
@@ -33,7 +27,9 @@
         <joint name="shoulder_joint" value="1.5707"/>
     </group_state>
     <!--END EFFECTOR: Purpose: Represent information about an end effector.-->
-    <end_effector name="end_effector" parent_link="end_effector" group="hubert_hand" parent_group="hubert_arm"/>
+    <end_effector name="end_effector" parent_link="end_effector" group="hubert_hand"/>
+    <!--VIRTUAL JOINT: Purpose: this element defines a virtual joint between a robot link and an external frame of reference (considered fixed with respect to the robot)-->
+    <virtual_joint name="virtual_joint" type="floating" parent_frame="world" child_link="base_link"/>
     <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->
     <disable_collisions link1="arm_link" link2="base_link" reason="Never"/>
     <disable_collisions link1="arm_link" link2="body_link" reason="Never"/>
