@@ -1,0 +1,19 @@
+<launch>
+    <node name="camera_publisher" pkg="hubert_ov_seg" type="camera_publisher" output="screen"/>
+    <node name="threed_projection" pkg="hubert_ov_seg" type="3d_projection.py" output="screen"/>
+    <node name="hubert_ov_seg" pkg="hubert_ov_seg" type="hubert_ov_seg.py" output="screen"/>
+    <node pkg="rqt_gui" type="rqt_gui" name="rqt_gui" output="screen" />
+
+    <group ns="hubert_camera">
+        <node pkg="image_proc" type="image_proc" name="image_proc_node" />
+        <node pkg="apriltag_ros" type="apriltag_ros_continuous_node" name="apriltag_ros_continuous_node" output="screen">
+
+            <param name="publish_tag_detections_image" type="bool" value="true" />
+            <param name="queue_size" type="int" value="1" />
+            
+            <rosparam command="load" file="$(find hubert_ov_seg)/config/settings.yaml"/>
+            <rosparam command="load" file="$(find hubert_ov_seg)/config/tags.yaml"/>
+        </node>
+    </group>
+
+</launch>

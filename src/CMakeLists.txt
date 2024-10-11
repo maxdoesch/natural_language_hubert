@@ -1,1 +1,1 @@
-/opt/anaconda3/envs/ROS/share/catkin/cmake/toplevel.cmake
+/home/max/miniconda3/envs/ros_env/share/catkin/cmake/toplevel.cmake
