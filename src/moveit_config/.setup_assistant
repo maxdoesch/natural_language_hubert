@@ -1,0 +1,11 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: hubert_kinematics
+    relative_path: urdf/test_robot.urdf.xacro
+    xacro_args: ""
+  SRDF:
+    relative_path: config/hubert_robot.srdf
+  CONFIG:
+    author_name: lucas kristiansson
+    author_email: lucas.kristiansson@gmail.com
+    generated_timestamp: 1728906281
