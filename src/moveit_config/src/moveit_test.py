@@ -224,15 +224,16 @@ class MoveGroupPythonInterfaceTutorial(object):
         ## end-effector:
         
         pose_goal = geometry_msgs.msg.Pose()
-        
-        pose_goal.orientation.x = 0.6530066919736575
-        pose_goal.orientation.y = -0.2705255937656439
-        pose_goal.orientation.z = 0.2707257318279428
-        pose_goal.orientation.w = 0.6535332749612612
 
-        pose_goal.position.x = 0.2129078573041407
-        pose_goal.position.y = -0.1031305681299438
-        pose_goal.position.z = 0.2573248786287462
+        pose_goal.position.x = 0.12203034253194199
+        pose_goal.position.y = -0.10286861443061072
+        pose_goal.position.z = 0.5799874864417031
+        
+        pose_goal.orientation.w = 1.0
+
+        
+        print(pose_goal)
+
 
 
         move_group.set_pose_target(pose_goal)
