@@ -1,8 +1,15 @@
 <launch>
+    <param name="robot_description" command="$(find xacro)/xacro '$(find hubert_kinematics)/urdf/test_robot.urdf.xacro'" />
+    <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+    <node pkg="joint_state_publisher" type="joint_state_publisher" name="joint_state_publisher" output="screen" />
+
     <node name="camera_publisher" pkg="hubert_ov_seg" type="camera_publisher" output="screen"/>
     <node name="threed_projection" pkg="hubert_ov_seg" type="3d_projection.py" output="screen"/>
     <node name="hubert_ov_seg" pkg="hubert_ov_seg" type="hubert_ov_seg.py" output="screen"/>
     <node pkg="rqt_gui" type="rqt_gui" name="rqt_gui" output="screen" />
+
+    <arg  name="rviz_config" default="$(find hubert_ov_seg)/config/rviz_config.rviz" />
+    <node name="rviz" pkg="rviz" type="rviz" args="-d $(arg rviz_config)" />
 
     <group ns="hubert_camera">
         <node pkg="image_proc" type="image_proc" name="image_proc_node" />

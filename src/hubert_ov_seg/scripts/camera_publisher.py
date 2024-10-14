@@ -84,7 +84,7 @@ class CameraPublisher:
         camera_info.roi.do_rectify = False
 
         # Set the frame ID and timestamp if necessary
-        camera_info.header.frame_id = "camera_frame"
+        camera_info.header.frame_id = "cam_link"
         camera_info.header.stamp = rospy.Time.now()
 
         return camera_info

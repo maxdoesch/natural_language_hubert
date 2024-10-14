@@ -76,7 +76,7 @@ class PixelTo3D:
     def publish_tf_frame(self, point_3d):
         t = TransformStamped()
         t.header.stamp = rospy.Time.now()
-        t.header.frame_id = "hubert_camera"
+        t.header.frame_id = "cam_link"
         t.child_frame_id = point_3d.label
         t.transform.translation.x = point_3d.point.x
         t.transform.translation.y = point_3d.point.y
