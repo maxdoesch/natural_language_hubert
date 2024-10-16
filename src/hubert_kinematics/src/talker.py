@@ -8,7 +8,7 @@ import time
 from sensor_msgs.msg import JointState
 from geometry_msgs.msg import Point
 
-import pcm2angle
+from hubert_kinematics import pcm2angle
 
 from hubert_launch.msg import LabeledPoint
 
