@@ -162,6 +162,8 @@ catkin_install_python(PROGRAMS
   src/talker.py
   src/angle2pcm.py
   src/pcm2angle.py
+  src/ik_solver.py
+  src/ik_test.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
