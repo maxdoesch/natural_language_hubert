@@ -1,6 +1,8 @@
 # Define pi as PI
 PI = 3.1415926536
 
+print("pcm2angle.py is being executed.")
+
 def __calculate(pcm, angle_min, angle_max, pcm_min, pcm_max) -> float:
     # Raise error if PCM is outside of the boundary
     if pcm < pcm_min or pcm > pcm_max:
