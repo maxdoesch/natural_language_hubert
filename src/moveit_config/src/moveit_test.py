@@ -52,6 +52,7 @@ import moveit_commander
 import moveit_msgs.msg
 import geometry_msgs.msg
 from tf.transformations import *
+import numpy as np
 
 try:
     from math import pi, tau, dist, fabs, cos
@@ -175,6 +176,26 @@ class MoveGroupPythonInterfaceTutorial(object):
         self.planning_frame = planning_frame
         self.eef_link = eef_link
         self.group_names = group_names
+    
+    @staticmethod
+    def calculate_quaternion(move_group, x, y):
+        # Initial position for eef
+        x0 = 0.122
+        y0 = -0.103
+
+        # Calculate the change in position
+        delta_x = x - x0
+        delta_y = y - y0
+        
+        # Calculate the angle in radians using atan2
+        
+        rotation = math.atan2(delta_y, delta_x) % pi
+
+        print(rotation)
+
+        q = quaternion_from_euler(pi/2, 0, rotation)
+        
+        return q
 
     def go_to_joint_state(self):
         # Copy class variables to local variables to make the web tutorials more clear.
@@ -191,9 +212,9 @@ class MoveGroupPythonInterfaceTutorial(object):
         ## We use the constant `tau = 2*pi <https://en.wikipedia.org/wiki/Turn_(angle)#Tau_proposals>`_ for convenience:
         # We get the joint values from the group and change some of the values:
         joint_goal = move_group.get_current_joint_values()
-        joint_goal[0] = 0
-        joint_goal[1] = pi/4
-        joint_goal[2] = 0
+        joint_goal[0] = 0.0
+        joint_goal[1] = 0.0
+        joint_goal[2] = 0.0
 
         # The go command can be called with joint values, poses, or without any
         # parameters if you have already set the pose or joint target for the group
@@ -225,24 +246,38 @@ class MoveGroupPythonInterfaceTutorial(object):
         
         pose_goal = geometry_msgs.msg.Pose()
 
-        pose_goal.position.x = 0.12203034253194199
-        pose_goal.position.y = -0.10286861443061072
-        pose_goal.position.z = 0.5799874864417031
-        
-        pose_goal.orientation.w = 1.0
+        pose_goal.position.x = 0.148
+        pose_goal.position.y = -0.003
+        pose_goal.position.z = 0.2134
+
+        q = self.calculate_quaternion(move_group, pose_goal.position.x, pose_goal.position.y)
+
+        pose_goal.orientation.x = q[0]
+        pose_goal.orientation.y = q[1]
+        pose_goal.orientation.z = q[2]
+        pose_goal.orientation.w = q[3]
+
+        # pose_goal.orientation.x = 0.5
+        # pose_goal.orientation.y = 0.5
+        # pose_goal.orientation.z = 0.5
+        # pose_goal.orientation.w = 0.5
 
         
-        print(pose_goal)
-
-
 
         move_group.set_pose_target(pose_goal)
 
         ## Now, we call the planner to compute the plan and execute it.
         # `go()` returns a boolean indicating whether the planning and execution was successful.
         success = move_group.go(wait=True)
+        print(pose_goal)
+        print(move_group.get_current_pose())
+
         # Calling `stop()` ensures that there is no residual movement
         move_group.stop()
+
+        # plan = move_group.get_planning_frame()
+        # self.execute_plan(plan)
+
         # It is always good to clear your targets after planning with poses.
         # Note: there is no equivalent function for clear_joint_value_targets().
         move_group.clear_pose_targets()
@@ -498,44 +533,16 @@ def main():
         )
         tutorial = MoveGroupPythonInterfaceTutorial()
 
-        input(
-            "============ Press `Enter` to execute a movement using a joint state goal ..."
-        )
-        tutorial.go_to_joint_state()
+        if input(
+            "============ Press `y` to execute a movement using a joint state goal ..."
+        ) == "y":
+            tutorial.go_to_joint_state()
+        else:
+            print("aborted")
 
         input("============ Press `Enter` to execute a movement using a pose goal ...")
         tutorial.go_to_pose_goal()
 
-        # input("============ Press `Enter` to plan and display a Cartesian path ...")
-        # cartesian_plan, fraction = tutorial.plan_cartesian_path()
-
-        # input(
-        #     "============ Press `Enter` to display a saved trajectory (this will replay the Cartesian path)  ..."
-        # )
-        # tutorial.display_trajectory(cartesian_plan)
-
-        # input("============ Press `Enter` to execute a saved path ...")
-        # tutorial.execute_plan(cartesian_plan)
-
-        # input("============ Press `Enter` to add a box to the planning scene ...")
-        # tutorial.add_box()
-
-        # input("============ Press `Enter` to attach a Box to the Panda robot ...")
-        # tutorial.attach_box()
-
-        # input(
-        #     "============ Press `Enter` to plan and execute a path with an attached collision object ..."
-        # )
-        # cartesian_plan, fraction = tutorial.plan_cartesian_path(scale=-1)
-        # tutorial.execute_plan(cartesian_plan)
-
-        # input("============ Press `Enter` to detach the box from the Panda robot ...")
-        # tutorial.detach_box()
-
-        # input(
-        #     "============ Press `Enter` to remove the box from the planning scene ..."
-        # )
-        # tutorial.remove_box()
 
     except rospy.ROSInterruptException:
         return
