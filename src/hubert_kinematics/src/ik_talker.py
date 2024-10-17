@@ -66,6 +66,7 @@ def joints_talker():
 
     pub_body = rospy.Publisher('/servo_body', UInt16, queue_size=10, latch=True)
     pub_neck_tilt = rospy.Publisher('/servo_neck_tilt', UInt16, queue_size=10, latch=True)
+    pub_neck_pan = rospy.Publisher('/servo_neck_pan', UInt16, queue_size=10, latch=True)
     pub_shoulder = rospy.Publisher('/servo_shoulder', UInt16, queue_size=10)
     pub_elbow = rospy.Publisher('/servo_elbow', UInt16, queue_size=10)
     pub_gripper = rospy.Publisher('/servo_gripper', UInt16, queue_size=10)
@@ -84,7 +85,7 @@ def joints_talker():
     rospy.loginfo(shoulder_first_value)
     pub_shoulder.publish(shoulder_first_value)
     time.sleep(2)
-    
+
     shoulder_first_value = angle2pcm.shoulder(PI/4)
 
     rospy.loginfo(elbow_first_value)
@@ -111,6 +112,18 @@ def joints_talker():
 
     positions = [angles[0], 0, 0, angles[1], angles[2]]
     msg = create_joint_state_msg(positions)
+
+    body_new_value = angle2pcm(angles[0])
+    shoulder_new_value = angle2pcm(angles[1])
+    elbow_new_value = angle2pcm(angles[2])
+
+    rospy.loginfo(body_new_value)
+    pub_body.publish(body_new_value)
+    rospy.loginfo(shoulder_new_value)
+    pub_shoulder.publish(shoulder_new_value)
+    rospy.loginfo(elbow_new_value)
+    pub_elbow.publish(elbow_new_value)
+
 
     print(f"Final angles given to Hubert for theta1, theta2 and theta3: {angles[0]}, {angles[1]}, {angles[2]}")
 
