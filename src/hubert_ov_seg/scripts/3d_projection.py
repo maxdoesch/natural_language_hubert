@@ -22,11 +22,11 @@ class PixelTo3D:
         # Subscribers
         rospy.Subscriber('/hubert_camera/image_rect_color', Image, self.image_callback)
         rospy.Subscriber('/hubert_camera/camera_info', CameraInfo, self.camera_info_callback)
-        rospy.Subscriber('/base_frame/pixel_coordinate', LabeledPoint, self.pixel_coordinate_callback)
+        rospy.Subscriber('/hubert_camera/pixel_coordinate', LabeledPoint, self.pixel_coordinate_callback)
         rospy.Subscriber('/hubert_camera/tag_detections', AprilTagDetectionArray, self.apriltag_callback), 
 
         # Publisher
-        self.point_pub = rospy.Publisher('/hubert_camera/3d_coordinate', LabeledPoint, queue_size=10)
+        self.point_pub = rospy.Publisher('/base_frame/3d_coordinate', LabeledPoint, queue_size=10)
 
         self.tf_broadcaster = tf2_ros.TransformBroadcaster()
         self.tfBuffer = tf2_ros.Buffer(rospy.Duration(10.0))
@@ -125,6 +125,8 @@ class PixelTo3D:
         t.transform.translation.y = point_3d.point.y
         t.transform.translation.z = point_3d.point.z
         t.transform.rotation.w = 1.0  # No rotation, only translation
+
+        print(t)
 
         self.tf_broadcaster.sendTransform(t)
 

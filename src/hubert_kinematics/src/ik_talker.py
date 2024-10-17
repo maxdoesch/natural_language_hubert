@@ -137,7 +137,7 @@ def joints_talker():
     # print(f"Angles chosen for theta1, theta2 and theta3: {theta1}, {theta2}, {theta3}")
 
     # forward_kinematics = FK(theta1, theta2, theta3)
-    # inverse_kinematics = IK(forward_kinematics.coords[0], forward_kinematics.coords[1], forward_kinematics.coords[2])
+    # inverse_kinematics = IK(forward_kinematics.coords[0], forward_kinematics.coords[1], forward_kinematics.coords[2])= 
     # angles = inverse_kinematics.angles
 
     # positions = [angles[0], 0, 0, angles[1], angles[2]]
