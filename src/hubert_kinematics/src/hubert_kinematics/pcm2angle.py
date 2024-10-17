@@ -36,9 +36,9 @@ class Pcm2angle:
 
         return angle_value  # Return as a float
 
-    def head_pan(self, pcm: int) -> float:
+    def neck_pan(self, pcm: int) -> float:
         """
-        Function that converts PCM for HEAD_PAN servo to angle.
+        Function that converts PCM for neck_PAN servo to angle.
         
         :param pcm: PCM value [550, 2400]
         :return: Corresponding angle in radians.
@@ -54,9 +54,9 @@ class Pcm2angle:
 
         return angle_value  # Return as a float
 
-    def head_tilt(self, pcm: int) -> float:
+    def neck_tilt(self, pcm: int) -> float:
         """
-        Function that converts PCM for HEAD_TILT servo to angle.
+        Function that converts PCM for neck_TILT servo to angle.
         
         :param pcm: PCM value [950, 2400]
         :return: Corresponding angle in radians.
@@ -86,7 +86,7 @@ class Pcm2angle:
         pcm_min = 750
         pcm_max = 2200
 
-        angle_value = self.__calculate(pcm, angle_min, angle_max, pcm_max, pcm_min)
+        angle_value = self.__calculate(pcm, angle_min, angle_max, pcm_min, pcm_max)
 
         return -angle_value  # Return as a float
 
@@ -122,6 +122,6 @@ class Pcm2angle:
         pcm_min = 550
         pcm_max = 2150
 
-        dist_value = self.__calculate(pcm, dist_min, dist_max, pcm_min, pcm_max)
+        dist_value = self.__calculate(pcm, dist_min, dist_max, pcm_max, pcm_min)
 
         return dist_value  # Return as a float

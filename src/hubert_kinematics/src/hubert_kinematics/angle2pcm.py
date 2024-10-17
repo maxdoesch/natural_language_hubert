@@ -36,9 +36,9 @@ class Angle2pcm:
 
         return int(pcm_value)  # Return as an integer
 
-    def head_pan(self, angle: float = 0.0) -> int:
+    def neck_pan(self, angle: float = 0.0) -> int:
         """
-        Function that converts angle for HEAD_PAN servo to PCM.
+        Function that converts angle for neck_PAN servo to PCM.
         
         :param angle: Angle value [-PI/2, PI/2]
         :return: Corresponding angle in PCM integer.
@@ -54,9 +54,9 @@ class Angle2pcm:
 
         return int(pcm_value)  # Return as an integer
 
-    def head_tilt(self, angle: float = 0.0) -> int:
+    def neck_tilt(self, angle: float = 0.0) -> int:
         """
-        Function that converts angle for HEAD_TILT servo to PCM.
+        Function that converts angle for neck_TILT servo to PCM.
         
         :param angle: Angle value [-PI/4, PI/2]
         :return: Corresponding angle in PCM integer.
