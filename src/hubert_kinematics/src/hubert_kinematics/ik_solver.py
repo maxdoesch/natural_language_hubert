@@ -102,7 +102,7 @@ class InverseKinematics:
         self.x = x
         self.y = y
         self.z = z
-        self.theta_ranges = [(-np.pi/2, np.pi/2), (np.pi/6, np.pi/2), (-np.pi/2, 0)]
+        self.theta_ranges = [(-np.pi/2, np.pi/2), (0, np.pi/2), (-np.pi/2, 0)]
         self.resolution1 = 10  # Coarse resolution
         self.resolution2 = 20  # Fine resolution
         self.refine_range = 0.1  # Range for refinement around best angles (best*0.9 - best - best*1.1)
@@ -142,7 +142,8 @@ class InverseKinematics:
             # Check if we found a solution within the threshold
             if distance < self.threshold:
                 self.success = True
-                #print(f"Solution found! Attempts: {self.attempt_iter+1}/{self.attempts}")
+                print(f"Solution found! Attempts: {self.attempt_iter+1}/{self.attempts}")
+                print(f"Coordinates: {self.x, self.y, self.z}")
                 return np.array([refined_theta1, refined_theta2, refined_theta3])
             
             # Keep track of the best solution found so far
@@ -191,6 +192,3 @@ class InverseKinematics:
         min_idx = np.argmin(distances)
 
         return theta1_flat[min_idx], theta2_flat[min_idx], theta3_flat[min_idx], distances[min_idx]
-
-fk = ForwardKinematics(0, np.pi/3, -np.pi/3)
-print(fk.coords)

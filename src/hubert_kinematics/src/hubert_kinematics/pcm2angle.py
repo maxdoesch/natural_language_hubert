@@ -77,11 +77,11 @@ class Pcm2angle:
         :return: Corresponding angle in radians.
         """
 
-        angle_min = -PI/6
+        angle_min = 0
         angle_max = PI/2
 
-        pcm_min = 750
-        pcm_max = 2200
+        pcm_min = 1260
+        pcm_max = 2050
 
         angle_value = self.__calculate(pcm, angle_min, angle_max, pcm_min, pcm_max)
 
@@ -95,7 +95,7 @@ class Pcm2angle:
         :return: Corresponding angle in radians.
         """
 
-        angle_min = -PI/2
+        angle_min = -PI/2*.9
         angle_max = PI/2
 
         pcm_min = 550
