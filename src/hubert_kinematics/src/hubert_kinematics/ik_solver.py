@@ -57,7 +57,7 @@ class ForwardKinematics:
     @staticmethod
     def _compute_forward_kinematics_batch(theta1_array, theta2_array, theta3_array):
         # Define link lengths
-        L2, L3, L4, L5, L6, L7, L8, L9 = 0.315, 0.045, 0.108, 0.005, 0.034, 0.015, 0.088, 0.204
+        L1, L2, L3, L4, L5, L6, L7, L8, L9 = 0.055, 0.315, 0.045, 0.108, 0.005, 0.034, 0.015, 0.088, 0.204
         
         end_effector_positions = []
 
