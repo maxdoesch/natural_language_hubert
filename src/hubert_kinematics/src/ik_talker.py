@@ -124,7 +124,6 @@ def joints_talker():
     rospy.loginfo(elbow_new_value)
     pub_elbow.publish(elbow_new_value)
 
-
     print(f"Final angles given to Hubert for theta1, theta2 and theta3: {angles[0]}, {angles[1]}, {angles[2]}")
 
     pub_joint_states.publish(msg)
