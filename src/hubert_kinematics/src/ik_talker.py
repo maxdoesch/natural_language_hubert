@@ -98,14 +98,18 @@ def joints_talker():
     # time.sleep(2)
     # pub_gripper.publish(hubert.gripper_close())
 
-    hej = [body_value, neck_tilt_value, neck_pan_value, shoulder_value, elbow_value, gripper_value] = hubert.stance_first()
-    print(hej)
-
+    [body_value, neck_tilt_value, neck_pan_value, shoulder_value, elbow_value, gripper_value] = hubert.stance_first()
+    
     pub_body.publish(body_value)
+    time.sleep(1)
     pub_neck_tilt.publish(neck_tilt_value)
+    time.sleep(1)
     pub_neck_pan.publish(neck_pan_value)
+    time.sleep(1)
     pub_shoulder.publish(shoulder_value)
+    time.sleep(1)
     pub_elbow.publish(elbow_value)
+    time.sleep(1)
     pub_gripper.publish(gripper_value)
     time.sleep(4)
     print("First stance done!")
@@ -116,50 +120,54 @@ def joints_talker():
     print("Tilt neck done!")
 
     [shoulder_value, elbow_value] = hubert.arm_idle()
-    pub_shoulder.publish(shoulder_value)
     pub_elbow.publish(elbow_value)
+    time.sleep(1)
+    pub_shoulder.publish(shoulder_value)
+    
     print("Idle arms done!")
     time.sleep(4)
 
     angles = [pcm2angle.body(body_value), pcm2angle.neck_tilt(neck_tilt_value), pcm2angle.neck_pan(neck_pan_value),
                        pcm2angle.shoulder(shoulder_value), pcm2angle.elbow(elbow_value)]
     
-    while True:
-        msg = create_joint_state_msg(angles)
-        pub_joint_states.publish(msg)
+    # while True:
+    #     msg = create_joint_state_msg(angles)
+    #     pub_joint_states.publish(msg)
 
-    # theta1 = random.uniform(-pi/2, pi/2)
-    # theta2 = random.uniform(pi/6, pi/2)
-    # theta3 = random.uniform(-pi/2, 0)
+    theta1 = random.uniform(-pi/2, pi/2)
+    theta2 = random.uniform(pi/6, pi/2)
+    theta3 = random.uniform(-pi/2, 0)
 
-    # time.sleep(10)
+    time.sleep(2)
 
-    # print(f"Angles chosen for theta1, theta2 and theta3: {theta1}, {theta2}, {theta3}")
+    print(f"Angles chosen for theta1, theta2 and theta3: {theta1}, {theta2}, {theta3}")
 
-    # forward_kinematics = FK(theta1, theta2, theta3)
-    # inverse_kinematics = IK(forward_kinematics.coords[0], forward_kinematics.coords[1], forward_kinematics.coords[2])
-    # angles = inverse_kinematics.angles
+    forward_kinematics = FK(theta1, theta2, theta3)
+    inverse_kinematics = IK(forward_kinematics.coords[0], forward_kinematics.coords[1], forward_kinematics.coords[2])
+    angles = inverse_kinematics.angles
 
-    # positions = [angles[0], 0, 0, angles[1], angles[2]]
-    # msg = create_joint_state_msg(positions)
+    positions = [angles[0], 0, 0, angles[1], angles[2]]
+    msg = create_joint_state_msg(positions)
 
-    # body_new_value = angle2pcm(angles[0])
-    # shoulder_new_value = angle2pcm(angles[1])
-    # elbow_new_value = angle2pcm(angles[2])
+    body_new_value = angle2pcm.body(angles[0])
+    shoulder_new_value = angle2pcm.shoulder(angles[1])
+    elbow_new_value = angle2pcm.elbow(angles[2])
 
-    # rospy.loginfo(body_new_value)
-    # pub_body.publish(body_new_value)
-    # rospy.loginfo(shoulder_new_value)
-    # pub_shoulder.publish(shoulder_new_value)
-    # rospy.loginfo(elbow_new_value)
-    # pub_elbow.publish(elbow_new_value)
+    rospy.loginfo(body_new_value)
+    pub_body.publish(body_new_value)
+    time.sleep(1)
+    rospy.loginfo(shoulder_new_value)
+    pub_shoulder.publish(shoulder_new_value)
+    time.sleep(1)
+    rospy.loginfo(elbow_new_value)
+    pub_elbow.publish(elbow_new_value)
 
 
-    # print(f"Final angles given to Hubert for theta1, theta2 and theta3: {angles[0]}, {angles[1]}, {angles[2]}")
+    print(f"Final angles given to Hubert for theta1, theta2 and theta3: {angles[0]}, {angles[1]}, {angles[2]}")
 
-    # pub_joint_states.publish(msg)
+    pub_joint_states.publish(msg)
 
-    # rate.sleep()
+    rate.sleep()
 
 
 if __name__ == '__main__':

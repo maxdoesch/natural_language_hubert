@@ -77,7 +77,6 @@ class ForwardKinematics:
 
         return np.array(end_effector_positions)
 
-
 class InverseKinematics:
     def __init__(self, x: float, y: float, z: float, threshold=0.002, attempts=25):
         """
@@ -192,3 +191,6 @@ class InverseKinematics:
         min_idx = np.argmin(distances)
 
         return theta1_flat[min_idx], theta2_flat[min_idx], theta3_flat[min_idx], distances[min_idx]
+
+fk = ForwardKinematics(0, np.pi/3, -np.pi/3)
+print(fk.coords)
