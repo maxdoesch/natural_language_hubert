@@ -50,6 +50,9 @@ class Listener:
         else:
             self.coordinates_received = False
 
+def move_arm(body_angle, shoulder_angle, elbow_angle):
+    print()
+
 def create_joint_state_msg(positions):
     msg = JointState()
     msg.header.stamp = rospy.Time.now()
@@ -143,7 +146,7 @@ def joints_talker():
     print(f"Angles chosen for theta1, theta2 and theta3: {theta1}, {theta2}, {theta3}")
 
     forward_kinematics = FK(theta1, theta2, theta3)
-    inverse_kinematics = IK(forward_kinematics.coords[0], forward_kinematics.coords[1], forward_kinematics.coords[2])
+    inverse_kinematics = IK(forward_kinematics.coords[0], forward_kinematics.coords[1], forward_kinematics.coords[2] + 0.01)
     angles = inverse_kinematics.angles
 
     positions = [angles[0], 0, 0, angles[1], angles[2]]
@@ -162,10 +165,36 @@ def joints_talker():
     rospy.loginfo(elbow_new_value)
     pub_elbow.publish(elbow_new_value)
 
+    pub_joint_states.publish(msg)
 
-    print(f"Final angles given to Hubert for theta1, theta2 and theta3: {angles[0]}, {angles[1]}, {angles[2]}")
+    print(f"Intermediate angles given to Hubert for theta1, theta2 and theta3: {angles[0]}, {angles[1]}, {angles[2]}")
+
+
+    time.sleep(2)
+    inverse_kinematics = IK(forward_kinematics.coords[0], forward_kinematics.coords[1], forward_kinematics.coords[2])
+    angles = inverse_kinematics.angles
+    
+    positions = [angles[0], 0, 0, angles[1], angles[2]]
+    msg = create_joint_state_msg(positions)
+
+    body_new_value = angle2pcm.body(angles[0])
+    shoulder_new_value = angle2pcm.shoulder(angles[1])
+    elbow_new_value = angle2pcm.elbow(angles[2])
+
+    rospy.loginfo(body_new_value)
+    pub_body.publish(body_new_value)
+    time.sleep(1)
+    rospy.loginfo(shoulder_new_value)
+    pub_shoulder.publish(shoulder_new_value)
+    time.sleep(1)
+    rospy.loginfo(elbow_new_value)
+    pub_elbow.publish(elbow_new_value)
+
+    pub_gripper.publish(_Hubert.gripper_close())
 
     pub_joint_states.publish(msg)
+
+    print(f"Final angles given to Hubert for theta1, theta2 and theta3: {angles[0]}, {angles[1]}, {angles[2]}")    
 
     rate.sleep()
 
