@@ -9,9 +9,6 @@ class Pcm2angle:
 
     @staticmethod
     def __calculate(pcm, angle_min, angle_max, pcm_min, pcm_max) -> float:
-        # Raise error if PCM is outside of the boundary
-        if pcm < pcm_min or pcm > pcm_max:
-            raise ValueError(f"PCM must be between {pcm_min} and {pcm_max}.")
 
         # Linear interpolation from PCM to angle
         angle_value = angle_min + (pcm - pcm_min) * (angle_max - angle_min) / (pcm_max - pcm_min)
@@ -65,12 +62,12 @@ class Pcm2angle:
         angle_min = -PI/4
         angle_max = PI/2
 
-        pcm_min = 950
-        pcm_max = 2400
+        pcm_min = 2300 
+        pcm_max = 950
 
         angle_value = self.__calculate(pcm, angle_min, angle_max, pcm_min, pcm_max)
 
-        return angle_value  # Return as a float
+        return -angle_value  # Return as a float
 
     def shoulder(self, pcm: int) -> float:
         """

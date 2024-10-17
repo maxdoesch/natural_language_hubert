@@ -32,7 +32,7 @@ class Hubert:
     @staticmethod
     def arm_idle():
         """Returns the pcm values for [shoulder, elbow] for idle position in arms"""
-        return np.array([angle2pcm.shoulder(3*pi/2), angle2pcm.elbow(-pi/2)])
+        return np.array([angle2pcm.shoulder(pi/4), angle2pcm.elbow(-pi/4)])
     
     def arm_lift():
         """DO NOT USE"""
@@ -44,7 +44,7 @@ class Hubert:
         return 1300 # Value is hardcoded
     
     @staticmethod
-    def stance_first():
+    def stance_first(return_angles=False):
         """Returns a fully idle stance with 0 angles on all servos
         
         Returns [body, neck_tilt, neck_pan, shoulder, elbow, gripper]
@@ -58,4 +58,6 @@ class Hubert:
             angle2pcm.elbow(),
             angle2pcm.gripper(33)
         ])
-    
+
+
+print(angle2pcm.neck_tilt(0))
