@@ -1,5 +1,5 @@
-from ik_solver import ForwardKinematics as FK
-from ik_solver import InverseKinematics as IK
+from hubert_kinematics.ik_solver import ForwardKinematics as FK
+from hubert_kinematics.ik_solver import InverseKinematics as IK
 from math import pi
 import random
 import numpy as np
