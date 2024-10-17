@@ -32,7 +32,7 @@ class Hubert:
     @staticmethod
     def arm_idle():
         """Returns the pcm values for [shoulder, elbow] for idle position in arms"""
-        return np.array([angle2pcm.shoulder(pi/4), angle2pcm.elbow(-pi/4)])
+        return np.array([angle2pcm.shoulder(pi/3), angle2pcm.elbow(-pi/3)])
     
     def arm_lift():
         """DO NOT USE"""
@@ -59,5 +59,3 @@ class Hubert:
             angle2pcm.gripper(33)
         ])
 
-
-print(angle2pcm.neck_tilt(0))

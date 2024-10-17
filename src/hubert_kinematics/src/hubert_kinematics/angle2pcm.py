@@ -29,8 +29,8 @@ class Angle2pcm:
         angle_min = -PI/2
         angle_max = PI/2
 
-        pcm_min = 560
-        pcm_max = 2330
+        pcm_min = 2330
+        pcm_max = 560
 
         pcm_value = self.__calculate(angle, angle_min, angle_max, pcm_min, pcm_max)
 
