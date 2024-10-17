@@ -64,7 +64,7 @@ class ForwardKinematics:
         # Loop through each angle in the batch
         for theta1, theta2, theta3 in zip(theta1_array, theta2_array, theta3_array):
             # Compute transformations
-            T01 = ForwardKinematics._rot_z(theta1) @ ForwardKinematics._trans(L6, -L4, L2 + L3) @ ForwardKinematics._rot_x(np.pi / 2)
+            T01 = ForwardKinematics._rot_z(theta1) @ ForwardKinematics._trans(L6, -L4, L1 + L2 + L3) @ ForwardKinematics._rot_x(np.pi / 2)
             T12 = ForwardKinematics._rot_z(theta2) @ ForwardKinematics._trans(L7, -L8, -L5)
             T23 = ForwardKinematics._rot_z(theta3) @ ForwardKinematics._trans(0, -L9, 0)
 
