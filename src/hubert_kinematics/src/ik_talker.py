@@ -8,7 +8,8 @@ import time
 from sensor_msgs.msg import JointState
 from geometry_msgs.msg import Point
 
-from hubert_kinematics import angle2pcm
+from hubert_kinematics.angle2pcm import Angle2pcm as _Angle2pcm
+from hubert_kinematics.hubert_actions import Hubert as _Hubert
 
 from hubert_launch.msg import LabeledPoint
 
@@ -17,6 +18,9 @@ from hubert_kinematics.ik_solver import InverseKinematics as IK
 from math import pi
 import random
 import numpy as np
+
+angle2pcm = _Angle2pcm()
+hubert = _Hubert()
 
 PI = 3.1415926536
 
@@ -64,23 +68,26 @@ def joints_talker():
     pub_neck_tilt = rospy.Publisher('/servo_neck_tilt', UInt16, queue_size=10, latch=True)
     pub_shoulder = rospy.Publisher('/servo_shoulder', UInt16, queue_size=10)
     pub_elbow = rospy.Publisher('/servo_elbow', UInt16, queue_size=10)
+    pub_gripper = rospy.Publisher('/servo_gripper', UInt16, queue_size=10)
 
     rospy.init_node('joints_talker', anonymous=True)
 
     rate = rospy.Rate(10) # 10hz
 
-    positions = [0, 0, 0, -PI/4, PI/2]
+    positions = [0, 0, 0, -PI/4, PI/4]
     msg = create_joint_state_msg(positions)
     pub_joint_states.publish(msg)
 
     elbow_first_value = angle2pcm.elbow(-PI/4)
-    shoulder_first_value = angle2pcm.shoulder(PI/2)
+    shoulder_first_value = angle2pcm.shoulder(PI/4)
 
     rospy.loginfo(elbow_first_value)
     pub_elbow.publish(elbow_first_value)
     time.sleep(2)
     rospy.loginfo(shoulder_first_value)
     pub_shoulder.publish(shoulder_first_value)
+    time.sleep(2)
+    pub_gripper.publish(hubert.gripper_close())
 
 
 

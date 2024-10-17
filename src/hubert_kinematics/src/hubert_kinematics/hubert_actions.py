@@ -1,5 +1,5 @@
-from angle2pcm import Angle2pcm as _Angle2pcm
-from pcm2angle import Pcm2angle as _Pcm2angle
+from hubert_kinematics.angle2pcm import Angle2pcm as _Angle2pcm
+from hubert_kinematics.pcm2angle import Pcm2angle as _Pcm2angle
 import numpy as np
 from math import pi
 
