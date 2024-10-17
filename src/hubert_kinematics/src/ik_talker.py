@@ -124,8 +124,11 @@ def joints_talker():
     angles = [pcm2angle.body(body_value), pcm2angle.neck_tilt(neck_tilt_value), pcm2angle.neck_pan(neck_pan_value),
                        pcm2angle.shoulder(shoulder_value), pcm2angle.elbow(elbow_value)]
     
-    msg = create_joint_state_msg(angles)
-    pub_joint_states.publish(msg)
+
+    while True:
+        msg = create_joint_state_msg(angles)
+        pub_joint_states.publish(msg)
+        rate.sleep()
     print("Published joint states!")
 
     # theta1 = random.uniform(-pi/2, pi/2)

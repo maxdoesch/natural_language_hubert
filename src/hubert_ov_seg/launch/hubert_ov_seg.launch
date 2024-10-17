@@ -1,7 +1,7 @@
 <launch>
     <param name="robot_description" command="$(find xacro)/xacro '$(find hubert_kinematics)/urdf/test_robot.urdf.xacro'" />
     <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
-    <node pkg="joint_state_publisher" type="joint_state_publisher" name="joint_state_publisher" output="screen" />
+    <!--<node pkg="joint_state_publisher" type="joint_state_publisher" name="joint_state_publisher" output="screen" />-->
 
     <node name="camera_publisher" pkg="hubert_ov_seg" type="camera_publisher" output="screen"/>
     <node name="threed_projection" pkg="hubert_ov_seg" type="3d_projection.py" output="screen"/>
@@ -22,5 +22,13 @@
             <rosparam command="load" file="$(find hubert_ov_seg)/config/tags.yaml"/>
         </node>
     </group>
+
+
+    <node name="ik_talker" pkg="hubert_kinematics" type="ik_talker.py" output="screen"/>
+
+    <node pkg="rosserial_python" type="serial_node.py" name="serial_node">
+        <param name="port" value="/dev/ttyACM0"/>
+        <param name="baud" value="57600"/>
+    </node>
 
 </launch>
