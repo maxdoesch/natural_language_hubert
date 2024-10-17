@@ -53,7 +53,7 @@ class Listener:
 def create_joint_state_msg(positions):
     msg = JointState()
     msg.header.stamp = rospy.Time.now()
-    msg.name = ['base_joint', 'neck_joint', 'cam_joint', 'shoulder_joint', 'elbow_joint']
+    msg.name = ['base_joint', 'cam_joint', 'neck_joint', 'shoulder_joint', 'elbow_joint']
     msg.position = positions
     msg.velocity = []
     msg.effort = []
@@ -124,9 +124,9 @@ def joints_talker():
     angles = [pcm2angle.body(body_value), pcm2angle.neck_tilt(neck_tilt_value), pcm2angle.neck_pan(neck_pan_value),
                        pcm2angle.shoulder(shoulder_value), pcm2angle.elbow(elbow_value)]
     
-    msg = create_joint_state_msg(angles)
-    pub_joint_states.publish(msg)
-    print("Published joint states!")
+    while True:
+        msg = create_joint_state_msg(angles)
+        pub_joint_states.publish(msg)
 
     # theta1 = random.uniform(-pi/2, pi/2)
     # theta2 = random.uniform(pi/6, pi/2)
