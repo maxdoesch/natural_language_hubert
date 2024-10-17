@@ -5,7 +5,7 @@
 #include <sensor_msgs/CameraInfo.h>
 #include <opencv2/opencv.hpp>
 
-#define CAMERA_FRAME "cam_link"
+#define CAMERA_FRAME "camera_link"
 
 class CameraPublisher {
 public:
