@@ -79,6 +79,12 @@ def joints_talker():
     pub_joint_states.publish(msg)
 
     elbow_first_value = angle2pcm.elbow(-PI/4)
+
+    shoulder_first_value = angle2pcm.shoulder(PI/8)    
+    rospy.loginfo(shoulder_first_value)
+    pub_shoulder.publish(shoulder_first_value)
+    time.sleep(2)
+    
     shoulder_first_value = angle2pcm.shoulder(PI/4)
 
     rospy.loginfo(elbow_first_value)
