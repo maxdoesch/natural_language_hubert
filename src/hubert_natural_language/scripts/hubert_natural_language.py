@@ -16,7 +16,7 @@ PROMPT_ASSISTANT = "1. open end effector \
                     7. move arm by <20, 0> millimeter relative to ground plane"
 
 completion = client.chat.completions.create(
-    model="gpt-4o-mini",
+    model="gpt-4o",
     messages=[
         {
         "role": "system",
@@ -25,13 +25,18 @@ completion = client.chat.completions.create(
         {
         "role": "user",
         "content": [{ "type": "text", "text": PROMPT_USER},
-                    {"type": "image_url", "image_url": {"url": "https://www.shutterstock.com/shutterstock/photos/175132970/display_1500/stock-photo-kitchen-knife-and-green-apple-on-wooden-background-175132970.jpg", "detail": "low"},
-                }]
+                    {"type": "image_url", "image_url": {"url": "https://www.shutterstock.com/shutterstock/photos/175132970/display_1500/stock-photo-kitchen-knife-and-green-apple-on-wooden-background-175132970.jpg", "detail": "low"},}
+                ]
         },
         {
         "role": "assistant",
-        "content": [{ "type": "text", "text": PROMPT_ASSISTANT }]
+        "content": [{ "type": "text", "text": PROMPT_ASSISTANT}]
         },
+        {"role": "user",
+         "content": [{"type": "text", "text": "Bring my child something to play."},
+                     {"type": "image_url", "image_url": {"url": "https://www.coasterfurniture.com/wp-content/uploads/nursery-playroom.jpeg", "detail": "low"},}
+                ]
+        }
     ]
 )
 
