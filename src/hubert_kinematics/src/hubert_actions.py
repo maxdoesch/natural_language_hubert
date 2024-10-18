@@ -44,34 +44,13 @@ class Hubert:
 
     def move_arm(self, coordinates):
 
-        inverse_kinematics = IK(coordinates[0], coordinates[1], coordinates[2] + 0.03)
-
+        inverse_kinematics = IK(coordinates[0], coordinates[1], coordinates[2])
         [self.angle_body, self.angle_shoulder, self.angle_elbow] = inverse_kinematics.angles
-
         self.pcm_body = angle2pcm.body(self.angle_body)
         self.pcm_shoulder = angle2pcm.shoulder(self.angle_body)
         self.pcm_elbow = angle2pcm.elbow(self.angle_elbow)
 
-        time.sleep(5)
-        above_positions = positions.copy()
-        above_angles = angles.copy()
         self.update_positions()
-
-        body_new_value = angle2pcm.body(angles[0])
-        shoulder_new_value = angle2pcm.shoulder(angles[1])
-        elbow_new_value = angle2pcm.elbow(angles[2])
-
-        rospy.loginfo(body_new_value)
-        self.pub_body.publish(body_new_value)
-        time.sleep(1)
-        rospy.loginfo(shoulder_new_value)
-        self.pub_shoulder.publish(shoulder_new_value)
-        time.sleep(1)
-        rospy.loginfo(elbow_new_value)
-        self.pub_elbow.publish(elbow_new_value)
-
-        self.pub_joint_states.publish(msg)
-
 
     @staticmethod
     def gripper_open():

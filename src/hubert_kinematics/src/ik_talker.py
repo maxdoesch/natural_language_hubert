@@ -149,8 +149,8 @@ def joints_talker():
     inverse_kinematics = IK(forward_kinematics.coords[0], forward_kinematics.coords[1], forward_kinematics.coords[2] + 0.03)
     angles = inverse_kinematics.angles
     
-    body_value, shoulder_value, elbow_value = hubert.move_arm(coordinates)
-    publish(body_value)
+    # body_value, shoulder_value, elbow_value = hubert.move_arm(coordinates)
+    # publish(body_value)
 
 
     time.sleep(5)
