@@ -13,6 +13,8 @@ from hubert_kinematics.pcm2angle import Pcm2angle as _Pcm2angle
 import numpy as np
 from math import pi
 
+from hubert_kinematics.ik_solver import InverseKinematics as IK
+
 angle2pcm = _Angle2pcm()
 pcm2angle = _Pcm2angle()
 
@@ -65,6 +67,34 @@ class Hubert:
         msg.effort = []
 
         self.pub_jointstate.publish(msg)
+
+    def move_arm(self, coordinates):
+
+        inverse_kinematics = IK(coordinates[0], coordinates[1], coordinates[2] + 0.03)
+        angles = inverse_kinematics.angles
+
+        time.sleep(5)
+
+        positions = [angles[0], 0, 0, angles[1], angles[2]]
+        above_positions = positions.copy()
+        above_angles = angles.copy()
+        msg = self.create_joint_state_msg(positions)
+
+        body_new_value = angle2pcm.body(angles[0])
+        shoulder_new_value = angle2pcm.shoulder(angles[1])
+        elbow_new_value = angle2pcm.elbow(angles[2])
+
+        rospy.loginfo(body_new_value)
+        self.pub_body.publish(body_new_value)
+        time.sleep(1)
+        rospy.loginfo(shoulder_new_value)
+        self.pub_shoulder.publish(shoulder_new_value)
+        time.sleep(1)
+        rospy.loginfo(elbow_new_value)
+        self.pub_elbow.publish(elbow_new_value)
+
+        self.pub_joint_states.publish(msg)
+
 
     @staticmethod
     def gripper_open():
