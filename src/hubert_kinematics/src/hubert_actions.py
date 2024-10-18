@@ -47,6 +47,7 @@ class Hubert:
         self.pcm_shoulder = 0
         self.pcm_elbow = 0
         self.pcm_gripper = 0
+        self.old_pcms = []
         
         # Angle values for each joint
         self.angle_body = 0
@@ -55,8 +56,9 @@ class Hubert:
         self.angle_shoulder = 0
         self.angle_elbow = 0
         self.angle_gripper = 0
+        self.old_angles = []
     
-    def update_positions(self):
+    def get_jointstate(self):
         """Updates the positions of the Hubert robot and publishes the joint states"""
         positions_angle = [self.angle_body, self.angle_neck_tilt, self.angle_neck_pan, self.angle_shoulder, self.angle_elbow]
         msg = JointState()
@@ -71,14 +73,17 @@ class Hubert:
     def move_arm(self, coordinates):
 
         inverse_kinematics = IK(coordinates[0], coordinates[1], coordinates[2] + 0.03)
-        angles = inverse_kinematics.angles
+
+        [self.angle_body, self.angle_shoulder, self.angle_elbow] = inverse_kinematics.angles
+
+        self.pcm_body = angle2pcm.body(self.angle_body)
+        self.pcm_shoulder = angle2pcm.shoulder(self.angle_body)
+        self.pcm_elbow = angle2pcm.elbow(self.angle_elbow)
 
         time.sleep(5)
-
-        positions = [angles[0], 0, 0, angles[1], angles[2]]
         above_positions = positions.copy()
         above_angles = angles.copy()
-        msg = self.create_joint_state_msg(positions)
+        self.update_positions()
 
         body_new_value = angle2pcm.body(angles[0])
         shoulder_new_value = angle2pcm.shoulder(angles[1])
