@@ -52,6 +52,10 @@ class Hubert:
 
         self.update_positions()
 
+    def update_neck_pan(self, value):
+        self.
+        
+
     @staticmethod
     def gripper_open():
         """Returns the pcm value that corresponds to a fully opened gripper"""

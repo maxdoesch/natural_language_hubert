@@ -50,8 +50,19 @@ class Listener:
         else:
             self.coordinates_received = False
 
-def move_arm(body_angle, shoulder_angle, elbow_angle):
-    print()
+
+def look_out(listener, publisher, joint_states_publisher):
+    
+    while listener.label_received == False:
+        hubert.update_neck_pan(hubert.pcm_neck_pan + 200) #TODO
+        publisher.publish(hubert.pcm_neck_pan)
+        joint_states_publisher.publish(create_joint_state_msg(hubert.get_jointstate))
+
+
+def publish(value, publisher):
+    rospy.loginfo(value)
+    publisher.publish(value)
+    time.sleep(1)
 
 def create_joint_state_msg(positions):
     msg = JointState()
@@ -188,9 +199,8 @@ def joints_talker():
     shoulder_new_value = angle2pcm.shoulder(angles[1])
     elbow_new_value = angle2pcm.elbow(angles[2])
 
-    rospy.loginfo(body_new_value)
-    pub_body.publish(body_new_value)
-    time.sleep(1)
+    publish(body_new_value, pub_body)
+
     rospy.loginfo(elbow_new_value)
     pub_elbow.publish(elbow_new_value)
     time.sleep(1)
