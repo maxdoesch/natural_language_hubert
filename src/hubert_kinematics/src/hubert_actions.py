@@ -17,24 +17,54 @@ angle2pcm = _Angle2pcm()
 pcm2angle = _Pcm2angle()
 
 class Hubert:
-    def __init__(self, joint_publisher_list, joint_states_publisher):
+    def __init__(self, joint_publisher_list, jointstate_publisher):
         """
         Hubert stance class
-        
-        Hubert.stance_...: Methods that returns whole stances
-        Hubert.body_...: Methods that returns body movement
-        Hubert.arm_...: Methods that returns arm movements (both shoulder and elbow)
-        Hubert.neck_...: Methods that returns head movements (both tilt and pan)
 
-        Parameters:
-        joint_publisher_list : List of every publisher as [body, neck_tilt, neck_pan, shoulder, elbow, gripper]
-        joint_states_publisher : The joint states publisher
-        
+        Parameters
+        ----------
+        joint_publisher_list : list
+            List of every publisher as [body, neck_tilt, neck_pan, shoulder, elbow, gripper]
+        jointstate_publisher : rospy.Publisher
+            The joint states publisher
         """
 
+        # Publishers
+        self.pub_body = joint_publisher_list[0]
+        self.pub_neck_tilt = joint_publisher_list[1]
+        self.pub_neck_pan = joint_publisher_list[2]
+        self.pub_shoulder = joint_publisher_list[3]
+        self.pub_elbow = joint_publisher_list[4]
+        self.pub_gripper = joint_publisher_list[5]
+        self.pub_jointstate = jointstate_publisher
 
+        # PCM values for each joint
+        self.pcm_body = 0
+        self.pcm_neck_tilt = 0
+        self.pcm_neck_pan = 0
+        self.pcm_shoulder = 0
+        self.pcm_elbow = 0
+        self.pcm_gripper = 0
+        
+        # Angle values for each joint
+        self.angle_body = 0
+        self.angle_neck_tilt = 0
+        self.angle_neck_pan = 0
+        self.angle_shoulder = 0
+        self.angle_elbow = 0
+        self.angle_gripper = 0
+    
+    def update_positions(self):
+        """Updates the positions of the Hubert robot and publishes the joint states"""
+        positions_angle = [self.angle_body, self.angle_neck_tilt, self.angle_neck_pan, self.angle_shoulder, self.angle_elbow]
+        msg = JointState()
+        msg.header.stamp = rospy.Time.now()
+        msg.name = ['base_joint', 'cam_joint', 'neck_joint', 'shoulder_joint', 'elbow_joint']
+        msg.position = positions_angle
+        msg.velocity = []
+        msg.effort = []
 
-        pass
+        self.pub_jointstate.publish(msg)
 
     @staticmethod
     def gripper_open():
