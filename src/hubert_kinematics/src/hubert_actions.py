@@ -1,13 +1,3 @@
-#!/usr/bin/env python3
-# license removed for brevity
-import rospy
-import copy
-from std_msgs.msg import UInt16
-from std_msgs.msg import String
-import time
-from sensor_msgs.msg import JointState
-from geometry_msgs.msg import Point
-
 from hubert_kinematics.angle2pcm import Angle2pcm as _Angle2pcm
 from hubert_kinematics.pcm2angle import Pcm2angle as _Pcm2angle
 import numpy as np
@@ -31,15 +21,6 @@ class Hubert:
             The joint states publisher
         """
 
-        # Publishers
-        self.pub_body = joint_publisher_list[0]
-        self.pub_neck_tilt = joint_publisher_list[1]
-        self.pub_neck_pan = joint_publisher_list[2]
-        self.pub_shoulder = joint_publisher_list[3]
-        self.pub_elbow = joint_publisher_list[4]
-        self.pub_gripper = joint_publisher_list[5]
-        self.pub_jointstate = jointstate_publisher
-
         # PCM values for each joint
         self.pcm_body = 0
         self.pcm_neck_tilt = 0
@@ -47,7 +28,6 @@ class Hubert:
         self.pcm_shoulder = 0
         self.pcm_elbow = 0
         self.pcm_gripper = 0
-        self.old_pcms = []
         
         # Angle values for each joint
         self.angle_body = 0
@@ -56,19 +36,11 @@ class Hubert:
         self.angle_shoulder = 0
         self.angle_elbow = 0
         self.angle_gripper = 0
-        self.old_angles = []
     
     def get_jointstate(self):
         """Updates the positions of the Hubert robot and publishes the joint states"""
         positions_angle = [self.angle_body, self.angle_neck_tilt, self.angle_neck_pan, self.angle_shoulder, self.angle_elbow]
-        msg = JointState()
-        msg.header.stamp = rospy.Time.now()
-        msg.name = ['base_joint', 'cam_joint', 'neck_joint', 'shoulder_joint', 'elbow_joint']
-        msg.position = positions_angle
-        msg.velocity = []
-        msg.effort = []
-
-        self.pub_jointstate.publish(msg)
+        return positions_angle
 
     def move_arm(self, coordinates):
 
