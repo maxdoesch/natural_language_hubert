@@ -163,6 +163,7 @@ catkin_install_python(PROGRAMS
   src/talker.py
   src/ik_test.py
   src/ik_talker.py
+  src/hubert_actions.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

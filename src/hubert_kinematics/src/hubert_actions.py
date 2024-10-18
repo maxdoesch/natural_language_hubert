@@ -1,3 +1,13 @@
+#!/usr/bin/env python3
+# license removed for brevity
+import rospy
+import copy
+from std_msgs.msg import UInt16
+from std_msgs.msg import String
+import time
+from sensor_msgs.msg import JointState
+from geometry_msgs.msg import Point
+
 from hubert_kinematics.angle2pcm import Angle2pcm as _Angle2pcm
 from hubert_kinematics.pcm2angle import Pcm2angle as _Pcm2angle
 import numpy as np
@@ -7,7 +17,7 @@ angle2pcm = _Angle2pcm()
 pcm2angle = _Pcm2angle()
 
 class Hubert:
-    def __init__(self):
+    def __init__(self, joint_publisher_list, joint_states_publisher):
         """
         Hubert stance class
         
@@ -15,8 +25,15 @@ class Hubert:
         Hubert.body_...: Methods that returns body movement
         Hubert.arm_...: Methods that returns arm movements (both shoulder and elbow)
         Hubert.neck_...: Methods that returns head movements (both tilt and pan)
+
+        Parameters:
+        joint_publisher_list : List of every publisher as [body, neck_tilt, neck_pan, shoulder, elbow, gripper]
+        joint_states_publisher : The joint states publisher
         
         """
+
+
+
         pass
 
     @staticmethod
@@ -32,7 +49,7 @@ class Hubert:
     @staticmethod
     def arm_idle():
         """Returns the pcm values for [shoulder, elbow] for idle position in arms"""
-        return np.array([angle2pcm.shoulder(pi/3), angle2pcm.elbow(-pi/3)])
+        return np.array([angle2pcm.shoulder(pi/2), angle2pcm.elbow(-pi/2)])
     
     def arm_lift():
         """DO NOT USE"""

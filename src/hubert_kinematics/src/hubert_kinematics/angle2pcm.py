@@ -9,9 +9,6 @@ class Angle2pcm:
 
     @staticmethod
     def __calculate(angle, angle_min, angle_max, pcm_min, pcm_max):
-        # Raise error if outside of boundary
-        if angle < angle_min or angle > angle_max:
-            raise ValueError(f"Angle must be between {angle_min} and {angle_max} radians.")
 
         # Linear interpolation from angle to PCM
         pcm_value = pcm_min + (angle - angle_min) * (pcm_max - pcm_min) / (angle_max - angle_min)
@@ -83,7 +80,7 @@ class Angle2pcm:
         angle_min = 0
         angle_max = PI/2
 
-        pcm_min = 1260
+        pcm_min = 1270
         pcm_max = 2050
 
         pcm_value = self.__calculate(angle, angle_min, angle_max, pcm_min, pcm_max)

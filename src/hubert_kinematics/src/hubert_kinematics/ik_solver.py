@@ -102,7 +102,7 @@ class InverseKinematics:
         self.x = x
         self.y = y
         self.z = z
-        self.theta_ranges = [(-np.pi/2, np.pi/2), (0, np.pi/2), (-np.pi/2, 0)]
+        self.theta_ranges = [(-np.pi/2, np.pi/2), (np.pi/4, np.pi/2), (-np.pi/2, 0)]
         self.resolution1 = 10  # Coarse resolution
         self.resolution2 = 20  # Fine resolution
         self.refine_range = 0.1  # Range for refinement around best angles (best*0.9 - best - best*1.1)
