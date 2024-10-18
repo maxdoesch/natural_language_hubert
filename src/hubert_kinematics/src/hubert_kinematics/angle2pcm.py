@@ -1,7 +1,4 @@
-# Define pi as PI
-PI = 3.1415926536
-
-print("angle2pcm.py is being executed.")
+from math import pi as PI
 
 class Angle2pcm:
     def __init__(self):
@@ -121,5 +118,4 @@ class Angle2pcm:
 
         pcm_value = self.__calculate(dist_value, dist_min, dist_max, pcm_max, pcm_min)
 
-        print(pcm_value)
         return int(pcm_value)  # Return as an integer

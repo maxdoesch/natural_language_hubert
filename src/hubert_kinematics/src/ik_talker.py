@@ -51,18 +51,19 @@ class Listener:
             self.coordinates_received = False
 
 
-def look_out(listener, publisher, joint_states_publisher):
+def look_around(listener, pub_neck_pan, joint_states_publisher):
     
     while listener.label_received == False:
-        hubert.update_neck_pan(hubert.pcm_neck_pan + 200) #TODO
-        publisher.publish(hubert.pcm_neck_pan)
-        joint_states_publisher.publish(create_joint_state_msg(hubert.get_jointstate))
+        neck_pan_value = hubert.neck_pan_move_right()
+        publish(neck_pan_value, pub_neck_pan, joint_states_publisher)
+        if neck_pan_value == 550:
+            time.sleep(5)
 
 
-def publish(value, publisher):
-    rospy.loginfo(value)
+def publish(value, publisher, joint_states_publisher, delay=2):
     publisher.publish(value)
-    time.sleep(1)
+    joint_states_publisher.publish(create_joint_state_msg(hubert.get_jointstate()))
+    time.sleep(delay)
 
 def create_joint_state_msg(positions):
     msg = JointState()
@@ -112,7 +113,7 @@ def joints_talker():
     # time.sleep(2)
     # pub_gripper.publish(hubert.gripper_close())
 
-    [body_value, neck_tilt_value, neck_pan_value, shoulder_value, elbow_value, gripper_value] = hubert.stance_first()
+    [body_value, neck_tilt_value, neck_pan_value, shoulder_value, elbow_value, gripper_value] = hubert.get_stance_first()
     
     pub_body.publish(body_value)
     time.sleep(1)
@@ -128,12 +129,12 @@ def joints_talker():
     time.sleep(4)
     print("First stance done!")
 
-    neck_tilt_value = hubert.neck_tilt_down()
+    neck_tilt_value = hubert.get_neck_tilt_down()
     pub_neck_tilt.publish(neck_tilt_value)
     time.sleep(4)
     print("Tilt neck done!")
 
-    [shoulder_value, elbow_value] = hubert.arm_idle()
+    [shoulder_value, elbow_value] = hubert.get_arm_idle()
     pub_elbow.publish(elbow_value)
     time.sleep(1)
     pub_shoulder.publish(shoulder_value)
@@ -144,6 +145,10 @@ def joints_talker():
     angles = [pcm2angle.body(body_value), pcm2angle.neck_tilt(neck_tilt_value), pcm2angle.neck_pan(neck_pan_value),
                        pcm2angle.shoulder(shoulder_value), pcm2angle.elbow(elbow_value)]
     
+
+    look_around(sub_listener, pub_neck_pan, pub_joint_states)
+
+
     # while True:
     #     msg = create_joint_state_msg(angles)
     #     pub_joint_states.publish(msg)
