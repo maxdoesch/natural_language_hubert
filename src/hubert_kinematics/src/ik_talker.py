@@ -66,12 +66,16 @@ class Listener:
         rospy.loginfo(rospy.get_caller_id() + "I want to hear %s", data.data)
         self.instruction = data.data
 
-def look_around(listener, pub_neck_pan, joint_states_publisher):
+def look_around(listener, pub_body, pub_neck_pan, joint_states_publisher):
+
+    new_body_pcm = hubert.get_body_forward()
+    publish(new_body_pcm, pub_body, joint_states_publisher)
     
     while listener.coordinates_received == False:
-        neck_pan_value = hubert.neck_pan_move_right()
-        publish(neck_pan_value, pub_neck_pan, joint_states_publisher)
-        if neck_pan_value == 550:
+        neck_pan_pcm, body_pcm = hubert.get_cam_move_right()
+        publish(body_pcm, pub_body, joint_states_publisher)
+        publish(neck_pan_pcm, pub_neck_pan, joint_states_publisher)
+        if neck_pan_pcm == 550:
             time.sleep(5)
         
     if listener.coordinates_received == True:
@@ -161,7 +165,7 @@ def joints_talker():
 
         if sub_listener.instruction == instructions[0]:
             print("pick")
-            coordinates = look_around(sub_listener, pub_neck_pan, pub_joint_states)
+            coordinates = look_around(sub_listener, pub_body, pub_neck_pan, pub_joint_states)
 
             [body_new_value, shoulder_new_value, elbow_new_value] = hubert.get_arm_goto([coordinates[0], coordinates[1], coordinates[2] + 0.03])
 
@@ -209,7 +213,7 @@ def joints_talker():
             # Check if place next to an object
             body_value = hubert.get_body_forward()  # Face straight ahead
             publish(body_value, pub_body, pub_joint_states)
-            coordinates = look_around(sub_listener, pub_neck_pan, pub_joint_states)
+            coordinates = look_around(sub_listener, pub_body, pub_neck_pan, pub_joint_states)
             # WILL ADD: Change cooridnate to a random spot around first place
             angle = random.uniform(0, 2 * np.pi)
             distance = .02  # 2 cm away
