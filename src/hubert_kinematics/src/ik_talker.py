@@ -30,6 +30,7 @@ class Listener:
     def __init__(self):
         self.sub_label = rospy.Subscriber("/label_topic", String, self.label_callback)
         self.sub_coords = rospy.Subscriber("/coordinates", LabeledPoint, self.coordinates_callback)
+        #
         self.coordinates_received = False
         self.label_received = False
     
