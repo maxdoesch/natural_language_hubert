@@ -32,6 +32,7 @@ class Listener:
         self.sub_coords = rospy.Subscriber("/coordinates", LabeledPoint, self.coordinates_callback)
         self.coordinates_received = False
         self.label_received = False
+        self.coordinates = [None, None, None]
     
     def label_callback(self, data):
         rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
@@ -46,7 +47,7 @@ class Listener:
         rospy.loginfo(rospy.get_caller_id() + "I want to hear %s", self.label)
         if data.label == self.label:
             self.coordinates_received = True
-            print('fjdskljfkls')
+            self.coordinates = [data.point.x, data.point.y, data.point.z]
         else:
             self.coordinates_received = False
 
@@ -155,9 +156,14 @@ def joints_talker():
 
         if listened_instruction == instructions[0]:
             print("todo")
+        
+        elif listened_instruction == instructions[1]:
+            print("place")
 
-    
+
+
     look_around(sub_listener, pub_neck_pan, pub_joint_states)
+
 
 
     # while True:
