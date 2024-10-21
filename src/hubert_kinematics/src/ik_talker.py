@@ -55,13 +55,13 @@ class Listener:
             self.coordinates = [data.point.x, data.point.y, data.point.z]
         else:
             self.coordinates_received = False
-    
+
     def coordinates_callback2(self, data):
-        
+
         rospy.loginfo(rospy.get_caller_id() + "I heard %s, %s, %s", data.x, data.y, data.z)
         self.coordinates_received = True
         self.coordinates = [data.x, data.y, data.z]
-
+        
     def instruction_callback(self, data):
         rospy.loginfo(rospy.get_caller_id() + "I want to hear %s", data.data)
         self.instruction = data.data
@@ -73,7 +73,7 @@ def look_around(listener, pub_neck_pan, joint_states_publisher):
         publish(neck_pan_value, pub_neck_pan, joint_states_publisher)
         if neck_pan_value == 550:
             time.sleep(5)
-    
+        
     if listener.coordinates_received == True:
         return listener.coordinates
 
@@ -113,27 +113,6 @@ def joints_talker():
     listened_instruction = "None"
 
     instructions = ["pick", "place"]
-
-    # positions = [0, 0, 0, -PI/4, PI/4]
-    # msg = create_joint_state_msg(positions)
-    # pub_joint_states.publish(msg)
-
-    # elbow_first_value = angle2pcm.elbow(-PI/4)
-
-    # shoulder_first_value = angle2pcm.shoulder(PI/8)    
-    # rospy.loginfo(shoulder_first_value)
-    # pub_shoulder.publish(shoulder_first_value)
-    # time.sleep(2)
-
-    # shoulder_first_value = angle2pcm.shoulder(PI/4)
-
-    # rospy.loginfo(elbow_first_value)
-    # pub_elbow.publish(elbow_first_value)
-    # time.sleep(2)
-    # rospy.loginfo(shoulder_first_value)
-    # pub_shoulder.publish(shoulder_first_value)
-    # time.sleep(2)
-    # pub_gripper.publish(hubert.gripper_close())
 
     print("Starting up...")
 
@@ -186,7 +165,7 @@ def joints_talker():
 
             [body_new_value, shoulder_new_value, elbow_new_value] = hubert.get_arm_goto([coordinates[0], coordinates[1], coordinates[2] + 0.03])
 
-            positions = hubert.get_jointstate
+            positions = hubert.get_jointstate()
             msg = create_joint_state_msg(positions)
             pub_joint_states.publish(msg)
 
@@ -194,9 +173,11 @@ def joints_talker():
             publish(shoulder_new_value, pub_shoulder, pub_joint_states)
             publish(elbow_new_value, pub_elbow, pub_joint_states)
 
+            print("Ready to grab")
+
             [body_new_value, shoulder_new_value, elbow_new_value] = hubert.get_arm_goto([coordinates[0], coordinates[1], coordinates[2]])
 
-            positions = hubert.get_jointstate
+            positions = hubert.get_jointstate()
             msg = create_joint_state_msg(positions)
             pub_joint_states.publish(msg)
 
@@ -206,15 +187,20 @@ def joints_talker():
 
             pub_gripper.publish(hubert.get_gripper_close())
 
+            print("Object grapped")
+
             [body_new_value, shoulder_new_value, elbow_new_value] = hubert.get_arm_goto([coordinates[0], coordinates[1], coordinates[2] + 0.03])
 
-            positions = hubert.get_jointstate
+            positions = hubert.get_jointstate()
             msg = create_joint_state_msg(positions)
             pub_joint_states.publish(msg)
 
             publish(body_new_value, pub_body, pub_joint_states)
             publish(shoulder_new_value, pub_shoulder, pub_joint_states)
             publish(elbow_new_value, pub_elbow, pub_joint_states)
+
+            print("Pick instruction done")
+            sub_listener.instruction = "None"
 
         elif sub_listener.instruction == instructions[1]:
             print("place")
@@ -239,7 +225,9 @@ def joints_talker():
             positions = hubert.get_jointstate()
             msg = create_joint_state_msg(positions)
             pub_joint_states.publish(msg)
-            listened_instruction = "None"
+
+            print("Place instruction done")
+            sub_listener.instruction = "None"
 
 
 
