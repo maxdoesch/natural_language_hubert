@@ -33,6 +33,7 @@ class Listener:
         #
         self.coordinates_received = False
         self.label_received = False
+        self.coordinates = [None, None, None]
     
     def label_callback(self, data):
         rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
@@ -47,7 +48,7 @@ class Listener:
         rospy.loginfo(rospy.get_caller_id() + "I want to hear %s", self.label)
         if data.label == self.label:
             self.coordinates_received = True
-            print('fjdskljfkls')
+            self.coordinates = [data.point.x, data.point.y, data.point.z]
         else:
             self.coordinates_received = False
 
@@ -190,7 +191,28 @@ def joints_talker():
             publish(shoulder_new_value, pub_shoulder, pub_joint_states)
             publish(elbow_new_value, pub_elbow, pub_joint_states)
 
-            pub_gripper.publish(_Hubert.gripper_close())
+            pub_gripper.publish(hubert.get_gripper_close())
+
+        elif listened_instruction == instructions[1]:
+            print("place")
+            # Check if place ON an object or LEFT, RIGHT
+            # Check if place next to an object
+            body_value = hubert.get_body_forward()
+            publish(body_value, pub_body, pub_joint_states)
+            coordinates = look_around(sub_listener, pub_neck_pan, pub_joint_states)
+            # WILL ADD: Change cooridnate to a random spot around first place
+
+            [body_new_value, shoulder_new_value, elbow_new_value] = hubert.get_arm_goto(coordinates)
+
+            publish(body_new_value, pub_body, pub_joint_states)
+            publish(shoulder_new_value, pub_shoulder, pub_joint_states)
+            publish(elbow_new_value, pub_elbow, pub_joint_states)
+
+            positions = hubert.get_jointstate()
+            msg = create_joint_state_msg(positions)
+            pub_joint_states.publish(msg)
+
+
 
     # while True:
     #     msg = create_joint_state_msg(angles)

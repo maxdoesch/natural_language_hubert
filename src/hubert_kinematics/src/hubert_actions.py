@@ -188,3 +188,17 @@ class Hubert:
         
         return pcm_values
 
+    def get_body_forward(self):
+        """
+        The body should just be facing forward. No other changes
+        
+        Return
+        --------
+        pcm_body_value : int
+        """
+        self._angle_body = 0
+
+        self._update_angle2pcm_positions()
+        pcm_value = self._pcm_body
+
+        return pcm_value
