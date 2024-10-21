@@ -92,6 +92,8 @@ def joints_talker():
 
     rate = rospy.Rate(10) # 10hz
 
+    instructions = ["pick", "place"]
+
     # positions = [0, 0, 0, -PI/4, PI/4]
     # msg = create_joint_state_msg(positions)
     # pub_joint_states.publish(msg)
@@ -126,6 +128,9 @@ def joints_talker():
     pub_elbow.publish(elbow_value)
     time.sleep(1)
     pub_gripper.publish(gripper_value)
+
+    #Publish on joint states
+
     time.sleep(4)
     print("First stance done!")
 
@@ -146,6 +151,12 @@ def joints_talker():
                        pcm2angle.shoulder(shoulder_value), pcm2angle.elbow(elbow_value)]
     
 
+    while not rospy.is_shutdown():
+
+        if listened_instruction == instructions[0]:
+            print("todo")
+
+    
     look_around(sub_listener, pub_neck_pan, pub_joint_states)
 
 
