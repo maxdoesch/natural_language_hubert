@@ -96,6 +96,8 @@ def joints_talker():
 
     rate = rospy.Rate(10) # 10hz
 
+    listened_instruction = "None"
+
     instructions = ["pick", "place"]
 
     # positions = [0, 0, 0, -PI/4, PI/4]
@@ -118,6 +120,8 @@ def joints_talker():
     # pub_shoulder.publish(shoulder_first_value)
     # time.sleep(2)
     # pub_gripper.publish(hubert.gripper_close())
+
+    print("Starting up...")
 
     [body_value, neck_tilt_value, neck_pan_value, shoulder_value, elbow_value, gripper_value] = hubert.get_stance_first()
     
@@ -153,6 +157,12 @@ def joints_talker():
 
     angles = [pcm2angle.body(body_value), pcm2angle.neck_tilt(neck_tilt_value), pcm2angle.neck_pan(neck_pan_value),
                        pcm2angle.shoulder(shoulder_value), pcm2angle.elbow(elbow_value)]
+    
+    angles = hubert.get_jointstate()
+    msg = create_joint_state_msg(angles)
+    pub_joint_states.publish(msg)
+    print("Published joint states!")
+    
     
 
     while not rospy.is_shutdown():
@@ -196,10 +206,15 @@ def joints_talker():
             print("place")
             # Check if place ON an object or LEFT, RIGHT
             # Check if place next to an object
-            body_value = hubert.get_body_forward()
+            body_value = hubert.get_body_forward()  # Face straight ahead
             publish(body_value, pub_body, pub_joint_states)
             coordinates = look_around(sub_listener, pub_neck_pan, pub_joint_states)
             # WILL ADD: Change cooridnate to a random spot around first place
+            angle = random.uniform(0, 2 * np.pi)
+            distance = .02  # 2 cm away
+            new_x = coordinates[0] + distance * np.cos(angle)
+            new_y = coordinates[1] + distance * np.sin(angle)
+            coordinates = [new_x, new_y, coordinates[2]]
 
             [body_new_value, shoulder_new_value, elbow_new_value] = hubert.get_arm_goto(coordinates)
 
@@ -210,6 +225,7 @@ def joints_talker():
             positions = hubert.get_jointstate()
             msg = create_joint_state_msg(positions)
             pub_joint_states.publish(msg)
+            listened_instruction = "None"
 
 
 
