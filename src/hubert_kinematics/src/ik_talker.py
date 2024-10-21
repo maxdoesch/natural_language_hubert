@@ -56,8 +56,8 @@ class Listener:
             self.coordinates_received = False
 
     def instruction_callback(self, data):
-        rospy.loginfo(rospy.get_caller_id() + "I want to hear %s", data.instruction)
-        self.instruction = data.instruction
+        rospy.loginfo(rospy.get_caller_id() + "I want to hear %s", data.data)
+        self.instruction = data.data
 
 def look_around(listener, pub_neck_pan, joint_states_publisher):
     
@@ -171,7 +171,6 @@ def joints_talker():
     print("Published joint states!")
     
     
-
     while not rospy.is_shutdown():
 
         if sub_listener.instruction == instructions[0]:
