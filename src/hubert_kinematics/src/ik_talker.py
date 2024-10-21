@@ -30,7 +30,10 @@ class Listener:
     def __init__(self):
         self.sub_label = rospy.Subscriber("/label_topic", String, self.label_callback)
         self.sub_coords = rospy.Subscriber("/coordinates", LabeledPoint, self.coordinates_callback)
-        #
+        
+        self.sub_instruction = rospy.Subscriber("/instruction_topic", String, self.instruction_callback)
+        self.instruction = None
+
         self.coordinates_received = False
         self.label_received = False
         self.coordinates = [None, None, None]
@@ -52,6 +55,9 @@ class Listener:
         else:
             self.coordinates_received = False
 
+    def instruction_callback(self, data):
+        rospy.loginfo(rospy.get_caller_id() + "I want to hear %s", data.instruction)
+        self.instruction = data.instruction
 
 def look_around(listener, pub_neck_pan, joint_states_publisher):
     
@@ -158,17 +164,13 @@ def joints_talker():
 
     while not rospy.is_shutdown():
 
-        if listened_instruction == instructions[0]:
+        if sub_listener.instruction == instructions[0]:
             print("pick")
             coordinates = look_around(sub_listener, pub_neck_pan, pub_joint_states)
-            inverse_kinematics = IK(coordinates[0], coordinates[1], coordinates[2] + 0.03)
-            angles = inverse_kinematics.angles
 
-            body_new_value = angle2pcm.body(angles[0])
-            shoulder_new_value = angle2pcm.shoulder(angles[1])
-            elbow_new_value = angle2pcm.elbow(angles[2])
+            [body_new_value, shoulder_new_value, elbow_new_value] = hubert.get_arm_goto(coordinates[0], coordinates[1], coordinates[2] + 0.03)
 
-            positions = [angles[0], 0, 0, angles[1], angles[2]]
+            positions = hubert.get_jointstate
             msg = create_joint_state_msg(positions)
             pub_joint_states.publish(msg)
 
@@ -176,14 +178,9 @@ def joints_talker():
             publish(shoulder_new_value, pub_shoulder, pub_joint_states)
             publish(elbow_new_value, pub_elbow, pub_joint_states)
 
-            inverse_kinematics = IK(coordinates[0], coordinates[1], coordinates[2])
-            angles = inverse_kinematics.angles
+            [body_new_value, shoulder_new_value, elbow_new_value] = hubert.get_arm_goto(coordinates[0], coordinates[1], coordinates[2])
 
-            body_new_value = angle2pcm.body(angles[0])
-            shoulder_new_value = angle2pcm.shoulder(angles[1])
-            elbow_new_value = angle2pcm.elbow(angles[2])
-
-            positions = [angles[0], 0, 0, angles[1], angles[2]]
+            positions = hubert.get_jointstate
             msg = create_joint_state_msg(positions)
             pub_joint_states.publish(msg)
 
@@ -193,7 +190,17 @@ def joints_talker():
 
             pub_gripper.publish(hubert.get_gripper_close())
 
-        elif listened_instruction == instructions[1]:
+            [body_new_value, shoulder_new_value, elbow_new_value] = hubert.get_arm_goto(coordinates[0], coordinates[1], coordinates[2] + 0.03)
+
+            positions = hubert.get_jointstate
+            msg = create_joint_state_msg(positions)
+            pub_joint_states.publish(msg)
+
+            publish(body_new_value, pub_body, pub_joint_states)
+            publish(shoulder_new_value, pub_shoulder, pub_joint_states)
+            publish(elbow_new_value, pub_elbow, pub_joint_states)
+
+        elif sub_listener.instruction == instructions[1]:
             print("place")
             # Check if place ON an object or LEFT, RIGHT
             # Check if place next to an object
