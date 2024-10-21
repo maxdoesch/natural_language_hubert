@@ -54,15 +54,18 @@ class Listener:
 
 def look_around(listener, pub_neck_pan, joint_states_publisher):
     
-    while listener.label_received == False:
+    while listener.coordinates_received == False:
         neck_pan_value = hubert.neck_pan_move_right()
         publish(neck_pan_value, pub_neck_pan, joint_states_publisher)
         if neck_pan_value == 550:
             time.sleep(5)
+    
+    if listener.coordinates_received == True:
+        return listener.coordinates
 
 
-def publish(value, publisher, joint_states_publisher, delay=2):
-    publisher.publish(value)
+def publish(pcm_value, publisher, joint_states_publisher, delay=2):
+    publisher.publish(pcm_value)
     joint_states_publisher.publish(create_joint_state_msg(hubert.get_jointstate()))
     time.sleep(delay)
 
@@ -155,15 +158,39 @@ def joints_talker():
     while not rospy.is_shutdown():
 
         if listened_instruction == instructions[0]:
-            print("todo")
-        
-        elif listened_instruction == instructions[1]:
-            print("place")
+            print("pick")
+            coordinates = look_around(sub_listener, pub_neck_pan, pub_joint_states)
+            inverse_kinematics = IK(coordinates[0], coordinates[1], coordinates[2] + 0.03)
+            angles = inverse_kinematics.angles
 
+            body_new_value = angle2pcm.body(angles[0])
+            shoulder_new_value = angle2pcm.shoulder(angles[1])
+            elbow_new_value = angle2pcm.elbow(angles[2])
 
+            positions = [angles[0], 0, 0, angles[1], angles[2]]
+            msg = create_joint_state_msg(positions)
+            pub_joint_states.publish(msg)
 
-    look_around(sub_listener, pub_neck_pan, pub_joint_states)
+            publish(body_new_value, pub_body, pub_joint_states)
+            publish(shoulder_new_value, pub_shoulder, pub_joint_states)
+            publish(elbow_new_value, pub_elbow, pub_joint_states)
 
+            inverse_kinematics = IK(coordinates[0], coordinates[1], coordinates[2])
+            angles = inverse_kinematics.angles
+
+            body_new_value = angle2pcm.body(angles[0])
+            shoulder_new_value = angle2pcm.shoulder(angles[1])
+            elbow_new_value = angle2pcm.elbow(angles[2])
+
+            positions = [angles[0], 0, 0, angles[1], angles[2]]
+            msg = create_joint_state_msg(positions)
+            pub_joint_states.publish(msg)
+
+            publish(body_new_value, pub_body, pub_joint_states)
+            publish(shoulder_new_value, pub_shoulder, pub_joint_states)
+            publish(elbow_new_value, pub_elbow, pub_joint_states)
+
+            pub_gripper.publish(_Hubert.gripper_close())
 
 
     # while True:
