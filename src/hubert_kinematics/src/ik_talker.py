@@ -201,6 +201,7 @@ def joints_talker():
 
             print("Pick instruction done")
             sub_listener.instruction = "None"
+            sub_listener.coordinates_received = False
 
         elif sub_listener.instruction == instructions[1]:
             print("place")
@@ -214,7 +215,7 @@ def joints_talker():
             distance = .02  # 2 cm away
             new_x = coordinates[0] + distance * np.cos(angle)
             new_y = coordinates[1] + distance * np.sin(angle)
-            coordinates = [new_x, new_y, coordinates[2]]
+            coordinates = [new_x, new_y, coordinates[2]+.02]
 
             [body_new_value, shoulder_new_value, elbow_new_value] = hubert.get_arm_goto(coordinates)
 
@@ -228,6 +229,7 @@ def joints_talker():
 
             print("Place instruction done")
             sub_listener.instruction = "None"
+            sub_listener.coordinates_received = False
 
 
 
