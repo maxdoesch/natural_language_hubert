@@ -35,7 +35,7 @@ class Listener:
         self.sub_coords2 = rospy.Subscriber("/coordinates2", Point, self.coordinates_callback2)
         self.pub_joint_states = rospy.Publisher('/joint_states', JointState, queue_size=10)
 
-        self.srv_goto = rospy.Service("/robot/go_to_coordinate", GoToCoordinate, self.arm_goto)
+        self.srv_goto = rospy.Service("/hubert/go_to_coordinate", GoToCoordinate, self.arm_goto)
 
         self.sub_instruction = rospy.Subscriber("/instruction_topic", String, self.instruction_callback)
         self.instruction = None
@@ -86,8 +86,10 @@ class Listener:
         self.instruction = data.data
     
     def arm_goto(self, coordinate):
-        above_distance = .03
-        coordinates = [coordinate.point.x, coordinate.point.y, coordinate.point.z + above_distance]
+        x_offset = 0.00
+        y_offset = 0.01
+        z_offset = .04
+        coordinates = [coordinate.point.x + x_offset, coordinate.point.y + y_offset, coordinate.point.z + z_offset]
         [body_value, shoulder_value, elbow_value] = hubert.get_arm_goto(coordinates)
 
         positions = hubert.get_jointstate()
@@ -95,9 +97,9 @@ class Listener:
         self.pub_joint_states.publish(msg)
 
         publish(body_value, self.pub_body, self.pub_joint_states)
-        publish(shoulder_value, self.pub_shoulder, self.pub_joint_states)
         publish(elbow_value, self.pub_elbow, self.pub_joint_states)
-
+        publish(shoulder_value, self.pub_shoulder, self.pub_joint_states)
+        
         time.sleep(3)
         print("Kinematics done!")
 
@@ -141,9 +143,10 @@ class Listener:
         angles = [pcm2angle.body(body_value), pcm2angle.neck_tilt(neck_tilt_value), pcm2angle.neck_pan(neck_pan_value),
                         pcm2angle.shoulder(shoulder_value), pcm2angle.elbow(elbow_value)]
         
-        angles = hubert.get_jointstate()
-        msg = create_joint_state_msg(angles)
-        self.pub_joint_states.publish(msg)
+        while True:
+            angles = hubert.get_jointstate()
+            msg = create_joint_state_msg(angles)
+            self.pub_joint_states.publish(msg)
         print("Published joint states!")
 
 

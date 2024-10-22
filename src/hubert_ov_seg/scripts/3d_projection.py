@@ -11,7 +11,7 @@ import tf2_ros
 import tf2_geometry_msgs
 from tf.transformations import quaternion_matrix
 
-HEIGHT_ADJUST = 0.01
+HEIGHT_ADJUST = 0.00
 
 class PixelTo3D:
     def __init__(self):

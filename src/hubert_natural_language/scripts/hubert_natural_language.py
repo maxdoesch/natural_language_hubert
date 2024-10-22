@@ -46,31 +46,36 @@ class NaturalLanguageHubert:
 
         rospy.Service("hubert_prompt", HubertPrompt, self.prompt_callback)
         rospy.Subscriber("/hubert_camera/image_raw", Image, self.image_callback)
-        rospy.Subscriber('/hubert_camera/pixel_coordinate', LabeledPoint, self.labeled_point_callback)
+        rospy.Subscriber('/base_frame/3d_coordinate', LabeledPoint, self.labeled_point_callback)
         
         self.label_pub = rospy.Publisher('/hubert/label_topic', String, queue_size=1)
 
         rospy.wait_for_service('/hubert/open_effector')
-        rospy.wait_for_service('/hubert/place_arm')
+        rospy.wait_for_service('/hubert/go_to_coordinate')
         rospy.wait_for_service('/hubert/grab')
         rospy.wait_for_service('/hubert/move_arm')
-
+        rospy.wait_for_service('hubert/idle')
+#
         try:
             self.open_effector_service = rospy.ServiceProxy(
-                '/robot/open_effector', 
+                '/hubert/open_effector', 
                 Empty
             )
             self.place_arm_service = rospy.ServiceProxy(
-                '/robot/go_to_coordinate', 
+                '/hubert/go_to_coordinate', 
                 GoToCoordinate
             )
             self.grab_service = rospy.ServiceProxy(
-                '/robot/grab', 
+                '/hubert/grab', 
                 Empty
             )
             self.move_arm_service = rospy.ServiceProxy(
-                '/robot/move_arm', 
+                '/hubert/move_arm', 
                 MoveArm
+            )
+            self.idle_service = rospy.ServiceProxy(
+                '/hubert/idle', 
+                Empty
             )
         except rospy.ServiceException as e:
             rospy.logerr(f"Service proxy creation failed: {e}")
@@ -82,10 +87,17 @@ class NaturalLanguageHubert:
 
         response = "No image information available!"
 
-        if self.latest_image_base64 is not None:
-            response = self.openai_request(request.prompt, self.latest_image_base64)
+        #if self.latest_image_base64 is not None:
+        #    response = self.openai_request(request.prompt, self.latest_image_base64)
+#
+        #return HubertPromptResponse(f"Received prompt: {response}")
 
-        return HubertPromptResponse(f"Received prompt: {response}")
+        print(request.prompt)
+
+
+        self.execute_commands("Robot: 1. place arm over <apple> 2. done")
+
+        return "Robot: 1. place arm over <apple> 2. done"
     
     def image_callback(self, msg):
         self.latest_image_base64 = self.convert_image_to_base64(msg)
@@ -168,11 +180,15 @@ class NaturalLanguageHubert:
     def place_arm_over(self, object_name):
         rospy.loginfo(f"Placing arm over {object_name}")
 
-        self.label_pub(object_name)
+        self.label_pub.publish(object_name)
+
+        while self.labeled_point is None:
+            time.sleep(1)
 
         while object_name != self.labeled_point.label:
             time.sleep(1)
 
+        print(self.labeled_point)
 
         self.place_arm_service(self.labeled_point.point)
         

@@ -138,6 +138,8 @@ class Hubert:
         inverse_kinematics = IK(coordinates[0], coordinates[1], coordinates[2])
         [self._angle_body, self._angle_shoulder, self._angle_elbow] = inverse_kinematics.angles
 
+        print(coordinates)
+
         self._update_angle2pcm_positions()
         return [self._pcm_body, self._pcm_shoulder, self._pcm_elbow]
 
