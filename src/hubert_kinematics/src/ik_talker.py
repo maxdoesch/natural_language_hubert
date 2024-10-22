@@ -8,6 +8,8 @@ import time
 from sensor_msgs.msg import JointState
 from geometry_msgs.msg import Point
 
+from hubert_launch.srv import GoToCoordinate
+
 from hubert_kinematics.angle2pcm import Angle2pcm as _Angle2pcm
 from hubert_actions import Hubert as _Hubert
 from hubert_kinematics.pcm2angle import Pcm2angle as _Pcm2angle
@@ -31,13 +33,25 @@ class Listener:
         self.sub_label = rospy.Subscriber("/label_topic", String, self.label_callback)
         self.sub_coords = rospy.Subscriber("/coordinates", LabeledPoint, self.coordinates_callback)
         self.sub_coords2 = rospy.Subscriber("/coordinates2", Point, self.coordinates_callback2)
-        
+        self.pub_joint_states = rospy.Publisher('/joint_states', JointState, queue_size=10)
+
         self.sub_instruction = rospy.Subscriber("/instruction_topic", String, self.instruction_callback)
         self.instruction = None
 
         self.coordinates_received = False
         self.label_received = False
         self.coordinates = [None, None, None]
+
+        self.pub_body = rospy.Publisher('/servo_body', UInt16, queue_size=10, latch=True)
+        self.pub_neck_tilt = rospy.Publisher('/servo_neck_tilt', UInt16, queue_size=10, latch=True)
+        self.pub_neck_pan = rospy.Publisher('/servo_neck_pan', UInt16, queue_size=10, latch=True)
+        self.pub_shoulder = rospy.Publisher('/servo_shoulder', UInt16, queue_size=10)
+        self.pub_elbow = rospy.Publisher('/servo_elbow', UInt16, queue_size=10)
+        self.pub_gripper = rospy.Publisher('/servo_gripper', UInt16, queue_size=10)
+
+        rospy.init_node('joints_talker', anonymous=True)
+
+        self.rate = rospy.Rate(10) # 10hz
     
     def label_callback(self, data):
         rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
@@ -45,7 +59,7 @@ class Listener:
         print(self.label)
         self.label_received = True
         self.coordinates_received = False
-
+    
     def coordinates_callback(self, data):
         
         rospy.loginfo(rospy.get_caller_id() + "I heard %s, %s, %s, %s", data.point.x, data.point.y, data.point.z, data.label)
@@ -65,6 +79,25 @@ class Listener:
     def instruction_callback(self, data):
         rospy.loginfo(rospy.get_caller_id() + "I want to hear %s", data.data)
         self.instruction = data.data
+    
+    def arm_goto(self, coordinate):
+        above_distance = .03
+        coordinates = [coordinate.point.x, coordinate.point.y, coordinate.point.z + above_distance]
+        [body_value, shoulder_value, elbow_value] = hubert.get_arm_goto(coordinates)
+
+        positions = hubert.get_jointstate()
+        msg = create_joint_state_msg(positions)
+        self.pub_joint_states.publish(msg)
+
+        publish(body_value, self.pub_body, self.pub_joint_states)
+        publish(shoulder_value, self.pub_shoulder, self.pub_joint_states)
+        publish(elbow_value, self.pub_elbow, self.pub_joint_states)
+
+        time.sleep(3)
+
+        return True
+    
+
 
 def look_around(listener, pub_body, pub_neck_pan, joint_states_publisher):
 
@@ -100,6 +133,8 @@ def create_joint_state_msg(positions):
 def joints_talker():
 
     sub_listener = Listener()
+
+    srv_goto = rospy.Service("/robot/go_to_coordinate", GoToCoordinate, arm_goto)
 
     pub_joint_states = rospy.Publisher('/joint_states', JointState, queue_size=10)
 
@@ -160,6 +195,8 @@ def joints_talker():
     pub_joint_states.publish(msg)
     print("Published joint states!")
     
+    while not rospy.is_shutdown():
+        
     
     while not rospy.is_shutdown():
 
@@ -247,12 +284,20 @@ def joints_talker():
 
     print(f"Angles chosen for theta1, theta2 and theta3: {theta1}, {theta2}, {theta3}")
 
-    # forward_kinematics = FK(theta1, theta2, theta3)
-    # inverse_kinematics = IK(forward_kinematics.coords[0], forward_kinematics.coords[1], forward_kinematics.coords[2])= 
-    # angles = inverse_kinematics.angles
+    forward_kinematics = FK(0.64683544, 1.15652211, -1.07848157)
+    inverse_kinematics = IK(forward_kinematics.coords[0], forward_kinematics.coords[1], forward_kinematics.coords[2] + 0.03)
+    angles = inverse_kinematics.angles
+    
+    # body_value, shoulder_value, elbow_value = hubert.move_arm(coordinates)
+    # publish(body_value)
 
-    # positions = [angles[0], 0, 0, angles[1], angles[2]]
-    # msg = create_joint_state_msg(positions)
+
+    time.sleep(5)
+
+    positions = [angles[0], 0, 0, angles[1], angles[2]]
+    above_positions = positions.copy()
+    above_angles = angles.copy()
+    msg = create_joint_state_msg(positions)
 
     body_new_value = angle2pcm.body(angles[0])
     shoulder_new_value = angle2pcm.shoulder(angles[1])
