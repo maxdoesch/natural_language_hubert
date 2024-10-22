@@ -34,13 +34,6 @@ class HubertListener:
         self.srv_grab = rospy.Service('/hubert/grab', Empty, self.grab)
         self.srv_move_arm = rospy.Service('/hubert/move_arm', MoveArm, self.move_arm)
 
-        # rospy.wait_for_service('/hubert/open_effector')
-        # rospy.wait_for_service('/hubert/go_to_coordinate')
-        # rospy.wait_for_service('/hubert/grab')
-        # rospy.wait_for_service('/hubert/move_arm')
-        
-
-
         # Publishers
         self.pub_body = rospy.Publisher('/servo_body', UInt16, queue_size=10, latch=True)
         self.pub_neck_tilt = rospy.Publisher('/servo_neck_tilt', UInt16, queue_size=10, latch=True)
@@ -50,7 +43,7 @@ class HubertListener:
         self.pub_gripper = rospy.Publisher('/servo_gripper', UInt16, queue_size=10)
         self.pub_joint_states = rospy.Publisher('/joint_states', JointState, queue_size=10)
 
-        # Other things
+        # Local variables
         self.old_coordinates = [0, 0, 0]
         self.x_offset = 0.00
         self.y_offset = 0.01
