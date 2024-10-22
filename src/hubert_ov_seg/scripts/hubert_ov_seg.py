@@ -47,14 +47,13 @@ class HuberOVSeg:
         self.cv2_bridge = CvBridge()
         cfg = setup_cfg()
         self.ov_seg_model = SlimFrozenSeg(cfg)
-        self.mask_pub = rospy.Publisher('/mask_topic', Image, queue_size=1)
-        self.coordinate_publisher = rospy.Publisher('/coordinates', LabeledPoint, queue_size=1)
+        self.mask_pub = rospy.Publisher('/hubert_camera/panoptic_mask', Image, queue_size=1)
+        self.coordinate_publisher = rospy.Publisher('/hubert_camera/pixel_coordinate', LabeledPoint, queue_size=1)
         self.label_sub = rospy.Subscriber('/label_topic', String, self.label_callback, queue_size=1)
-        self.image_sub = rospy.Subscriber('/image_topic', Image, self.image_callback, queue_size=1)
+        self.image_sub = rospy.Subscriber('/hubert_camera/image_raw', Image, self.image_callback, queue_size=1)
         self.latest_image = None
         self.processing = False
-
-        self.latest_label = None
+        self.latest_label = 'Person'
         
         self.process_rate = rospy.Rate(10)
         rospy.Timer(rospy.Duration(1.0/10), self.process_image)
@@ -70,9 +69,7 @@ class HuberOVSeg:
 
     def process_image(self, event):
         if self.latest_image is not None and not self.processing:
-            if self.latest_label is not None:
-                current_label = copy.copy(self.latest_label)
-                self.ov_seg_model.set_label(current_label)
+            self.ov_seg_model.set_label(self.latest_label)
 
             self.processing = True
             cv2_image = self.cv2_bridge.imgmsg_to_cv2(self.latest_image, desired_encoding="bgr8")
@@ -87,7 +84,7 @@ class HuberOVSeg:
 
                     labeled_point = LabeledPoint()
                     labeled_point.point = Point(x=com_coordinates[0], y=com_coordinates[1])
-                    labeled_point.label = current_label
+                    labeled_point.label = self.latest_label
 
                     self.coordinate_publisher.publish(labeled_point)
 
@@ -95,6 +92,7 @@ class HuberOVSeg:
 
 
             ros_image = self.cv2_bridge.cv2_to_imgmsg(visualized_output.get_image()[:, :, ::-1], encoding="bgr8")
+            ros_image.header.frame_id = "camera_link"
             self.mask_pub.publish(ros_image)
             self.processing = False
             self.latest_image = None
