@@ -8,9 +8,9 @@ import time
 from sensor_msgs.msg import JointState
 from geometry_msgs.msg import Point
 
-from hubert_launch.srv import GoToCoordinate
+from hubert_launch.srv import GoToCoordinate, MoveArm
 from hubert_launch.msg import LabeledPoint
-
+from std_srvs.srv import Empty
 
 from hubert_kinematics.angle2pcm import Angle2pcm as _Angle2pcm
 from hubert_actions import Hubert as _Hubert
@@ -31,7 +31,9 @@ class HubertListener:
     def __init__(self):
         # Service
         self.srv_goto = rospy.Service('/hubert/go_to_coordinate', GoToCoordinate, self.arm_goto)
-        
+        self.srv_open_eef = rospy.Service('/hubert/open_effector', Empty, self.open_effector)
+        self.srv_grab = rospy.Service('/hubert/grab', Empty, self.grab)
+        self.srv_move_arm = rospy.Service('/hubert/move_arm', MoveArm, self.move_arm)
 
         # rospy.wait_for_service('/hubert/open_effector')
         # rospy.wait_for_service('/hubert/go_to_coordinate')
@@ -166,3 +168,13 @@ class HubertListener:
             angles = hubert.get_jointstate()
             msg = self.create_joint_state_msg(angles)
             self.pub_joint_states.publish(msg)
+
+
+def main():
+
+    hu_listener = HubertListener()
+    hu_listener.run_start()
+
+
+if __name__ == '__main__':
+    main()
