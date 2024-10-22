@@ -31,7 +31,7 @@ class HubertListener:
     def __init__(self):
         # Service
         self.srv_goto = rospy.Service('/hubert/go_to_coordinate', GoToCoordinate, self.arm_goto)
-        self.srv_open_eef = rospy.Service('/hubert/open_effector')
+        
 
         # rospy.wait_for_service('/hubert/open_effector')
         # rospy.wait_for_service('/hubert/go_to_coordinate')
@@ -48,6 +48,9 @@ class HubertListener:
         self.pub_elbow = rospy.Publisher('/servo_elbow', UInt16, queue_size=10)
         self.pub_gripper = rospy.Publisher('/servo_gripper', UInt16, queue_size=10)
         self.pub_joint_states = rospy.Publisher('/joint_states', JointState, queue_size=10)
+
+        # Other things
+        self.old_coordinates = [0, 0, 0]
 
         # Rospy node
         rospy.init_node('joints_talker', anonymous=True)
@@ -85,11 +88,38 @@ class HubertListener:
         self.publish(body_value, self.pub_body, self.pub_joint_states)
         self.publish(elbow_value, self.pub_elbow, self.pub_joint_states)
         self.publish(shoulder_value, self.pub_shoulder, self.pub_joint_states)
+
+        self.old_coordinates = coordinates
         
         time.sleep(3)
-        print("Kinematics done!")
+        print("Arm go to coordinate done!")
 
         return True
+    
+    def open_effector(self):
+        gripper_value = hubert.get_gripper_open()
+
+        positions = hubert.get_jointstate()
+        msg = self.create_joint_state_msg(positions)
+        self.pub_joint_states.publish(msg)
+
+        self.publish(gripper_value, self.pub_gripper, self.pub_joint_states)
+
+        print("End effector is open!")
+    
+    def grab(self):
+        gripper_value = hubert.get_gripper_close()
+
+        positions = hubert.get_jointstate()
+        msg = self.create_joint_state_msg(positions)
+        self.pub_joint_states.publish(msg)
+
+        self.publish(gripper_value, self.pub_gripper, self.pub_joint_states)
+
+        print("End effector is grabbing!")
+
+    def move_arm(self, relative_coordinates):
+        pass
     
 
 
