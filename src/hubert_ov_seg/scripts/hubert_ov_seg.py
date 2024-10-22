@@ -49,7 +49,7 @@ class HuberOVSeg:
         self.ov_seg_model = SlimFrozenSeg(cfg)
         self.mask_pub = rospy.Publisher('/hubert_camera/panoptic_mask', Image, queue_size=1)
         self.coordinate_publisher = rospy.Publisher('/hubert_camera/pixel_coordinate', LabeledPoint, queue_size=1)
-        self.label_sub = rospy.Subscriber('/label_topic', String, self.label_callback, queue_size=1)
+        self.label_sub = rospy.Subscriber('/hubert/label_topic', String, self.label_callback, queue_size=1)
         self.image_sub = rospy.Subscriber('/hubert_camera/image_raw', Image, self.image_callback, queue_size=1)
         self.latest_image = None
         self.processing = False
