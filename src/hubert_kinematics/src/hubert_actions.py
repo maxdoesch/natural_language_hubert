@@ -180,7 +180,7 @@ class Hubert:
             [body, neck_tilt, neck_pan, shoulder, elbow, gripper]
 
         """
-        self._angle_body = pi/2
+        self._angle_body = 0
         self._angle_neck_tilt = 0
         self._angle_neck_pan = 0
         self._angle_shoulder = 0

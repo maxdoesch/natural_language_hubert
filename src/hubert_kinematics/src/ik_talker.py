@@ -35,6 +35,8 @@ class Listener:
         self.sub_coords2 = rospy.Subscriber("/coordinates2", Point, self.coordinates_callback2)
         self.pub_joint_states = rospy.Publisher('/joint_states', JointState, queue_size=10)
 
+        self.srv_goto = rospy.Service("/robot/go_to_coordinate", GoToCoordinate, self.arm_goto)
+
         self.sub_instruction = rospy.Subscriber("/instruction_topic", String, self.instruction_callback)
         self.instruction = None
 
@@ -52,6 +54,9 @@ class Listener:
         rospy.init_node('joints_talker', anonymous=True)
 
         self.rate = rospy.Rate(10) # 10hz
+
+        # Startup
+        self.first_run()
     
     def label_callback(self, data):
         rospy.loginfo(rospy.get_caller_id() + "I heard %s", data.data)
@@ -94,9 +99,52 @@ class Listener:
         publish(elbow_value, self.pub_elbow, self.pub_joint_states)
 
         time.sleep(3)
+        print("Kinematics done!")
 
         return True
     
+    def first_run(self):
+        print("Starting up...")
+
+        [body_value, neck_tilt_value, neck_pan_value, shoulder_value, elbow_value, gripper_value] = hubert.get_stance_first()
+        
+        self.pub_body.publish(body_value)
+        time.sleep(1)
+        self.pub_neck_tilt.publish(neck_tilt_value)
+        time.sleep(1)
+        self.pub_neck_pan.publish(neck_pan_value)
+        time.sleep(1)
+        self.pub_shoulder.publish(shoulder_value)
+        time.sleep(1)
+        self.pub_elbow.publish(elbow_value)
+        time.sleep(1)
+        self.pub_gripper.publish(gripper_value)
+
+        #Publish on joint states
+
+        time.sleep(4)
+        print("First stance done!")
+
+        neck_tilt_value = hubert.get_neck_tilt_down()
+        self.pub_neck_tilt.publish(neck_tilt_value)
+        time.sleep(4)
+        print("Tilt neck done!")
+
+        [shoulder_value, elbow_value] = hubert.get_arm_idle()
+        self.pub_elbow.publish(elbow_value)
+        time.sleep(1)
+        self.pub_shoulder.publish(shoulder_value)
+        
+        print("Idle arms done!")
+        time.sleep(4)
+
+        angles = [pcm2angle.body(body_value), pcm2angle.neck_tilt(neck_tilt_value), pcm2angle.neck_pan(neck_pan_value),
+                        pcm2angle.shoulder(shoulder_value), pcm2angle.elbow(elbow_value)]
+        
+        angles = hubert.get_jointstate()
+        msg = create_joint_state_msg(angles)
+        self.pub_joint_states.publish(msg)
+        print("Published joint states!")
 
 
 def look_around(listener, pub_body, pub_neck_pan, joint_states_publisher):
@@ -133,8 +181,6 @@ def create_joint_state_msg(positions):
 def joints_talker():
 
     sub_listener = Listener()
-
-    srv_goto = rospy.Service("/robot/go_to_coordinate", GoToCoordinate, arm_goto)
 
     pub_joint_states = rospy.Publisher('/joint_states', JointState, queue_size=10)
 
@@ -194,8 +240,6 @@ def joints_talker():
     msg = create_joint_state_msg(angles)
     pub_joint_states.publish(msg)
     print("Published joint states!")
-    
-    while not rospy.is_shutdown():
         
     
     while not rospy.is_shutdown():
@@ -389,6 +433,7 @@ def joints_talker():
 
 if __name__ == '__main__':
     try:
-        joints_talker()
+        #joints_talker()
+        listener = Listener()
     except rospy.ROSInterruptException:
         pass
