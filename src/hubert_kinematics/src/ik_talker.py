@@ -247,20 +247,12 @@ def joints_talker():
 
     print(f"Angles chosen for theta1, theta2 and theta3: {theta1}, {theta2}, {theta3}")
 
-    forward_kinematics = FK(0.64683544, 1.15652211, -1.07848157)
-    inverse_kinematics = IK(forward_kinematics.coords[0], forward_kinematics.coords[1], forward_kinematics.coords[2] + 0.03)
-    angles = inverse_kinematics.angles
-    
-    # body_value, shoulder_value, elbow_value = hubert.move_arm(coordinates)
-    # publish(body_value)
+    # forward_kinematics = FK(theta1, theta2, theta3)
+    # inverse_kinematics = IK(forward_kinematics.coords[0], forward_kinematics.coords[1], forward_kinematics.coords[2])= 
+    # angles = inverse_kinematics.angles
 
-
-    time.sleep(5)
-
-    positions = [angles[0], 0, 0, angles[1], angles[2]]
-    above_positions = positions.copy()
-    above_angles = angles.copy()
-    msg = create_joint_state_msg(positions)
+    # positions = [angles[0], 0, 0, angles[1], angles[2]]
+    # msg = create_joint_state_msg(positions)
 
     body_new_value = angle2pcm.body(angles[0])
     shoulder_new_value = angle2pcm.shoulder(angles[1])

@@ -5,7 +5,7 @@
 #include <sensor_msgs/CameraInfo.h>
 #include <opencv2/opencv.hpp>
 
-#define CAMERA_FRAME "hubert_camera"
+#define CAMERA_FRAME "camera_link"
 
 class CameraPublisher {
 public:
@@ -28,25 +28,19 @@ public:
 
     sensor_msgs::CameraInfo createCameraInfo() {
         sensor_msgs::CameraInfo camera_info;
-
         camera_info.width = 640;
         camera_info.height = 480;
-
         camera_info.distortion_model = "plumb_bob";
-        camera_info.D = {-0.023199777932122682, -0.025918697269801137, 0.001767049052526465, -0.0012548114794264373, 0.0};
-
-        camera_info.K = {672.8186259811123, 0.0, 313.24906274715994,
-                         0.0, 672.4172018457331, 256.6239831156741,
-                         0.0, 0.0, 1.0};
-
+        camera_info.D = {-0.26356547589441004, 0.38262175472105336, -0.0028605597622201632, -0.0014097888518859031, 0.0};
+        camera_info.K = {1036.662690584779, 0.0, 287.6858475723572,
+                        0.0, 1032.3445046229688, 222.55446891878728,
+                        0.0, 0.0, 1.0};
         camera_info.R = {1.0, 0.0, 0.0,
-                         0.0, 1.0, 0.0,
-                         0.0, 0.0, 1.0};
-
-        camera_info.P = {668.3340553377487, 0.0, 312.55442571781094, 0.0,
-                         0.0, 669.8883102878623, 257.2140328011053, 0.0,
-                         0.0, 0.0, 1.0, 0.0};
-
+                        0.0, 1.0, 0.0,
+                        0.0, 0.0, 1.0};
+        camera_info.P = {1012.5476517938175, 0.0, 286.00028020439396, 0.0,
+                        0.0, 1017.6788592402461, 221.62335510675115, 0.0,
+                        0.0, 0.0, 1.0, 0.0};
         camera_info.binning_x = 0;
         camera_info.binning_y = 0;
         camera_info.roi.x_offset = 0;
@@ -54,9 +48,8 @@ public:
         camera_info.roi.height = 0;
         camera_info.roi.width = 0;
         camera_info.roi.do_rectify = false;
-
-        return camera_info;
-    }
+    return camera_info;
+}
 
     void startPublishing() {
         while (ros::ok()) {

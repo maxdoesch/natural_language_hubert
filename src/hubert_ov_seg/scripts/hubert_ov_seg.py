@@ -92,6 +92,7 @@ class HuberOVSeg:
 
 
             ros_image = self.cv2_bridge.cv2_to_imgmsg(visualized_output.get_image()[:, :, ::-1], encoding="bgr8")
+            ros_image.header.frame_id = "camera_link"
             self.mask_pub.publish(ros_image)
             self.processing = False
             self.latest_image = None
