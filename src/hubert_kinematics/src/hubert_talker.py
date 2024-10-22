@@ -9,7 +9,6 @@ from sensor_msgs.msg import JointState
 from geometry_msgs.msg import Point
 
 from hubert_launch.srv import GoToCoordinate, MoveArm
-from hubert_launch.msg import LabeledPoint
 from std_srvs.srv import Empty
 
 from hubert_kinematics.angle2pcm import Angle2pcm as _Angle2pcm
@@ -53,6 +52,9 @@ class HubertListener:
 
         # Other things
         self.old_coordinates = [0, 0, 0]
+        self.x_offset = 0.00
+        self.y_offset = 0.01
+        self.z_offset = .04
 
         # Rospy node
         rospy.init_node('joints_talker', anonymous=True)
@@ -77,15 +79,8 @@ class HubertListener:
 
     
     def arm_goto(self, coordinate):
-        x_offset = 0.00
-        y_offset = 0.01
-        z_offset = .04
-        coordinates = [coordinate.point.x + x_offset, coordinate.point.y + y_offset, coordinate.point.z + z_offset]
+        coordinates = [coordinate.point.x + self.x_offset, coordinate.point.y + self.y_offset, coordinate.point.z + self.z_offset]
         [body_value, shoulder_value, elbow_value] = hubert.get_arm_goto(coordinates)
-
-        positions = hubert.get_jointstate()
-        msg = self.create_joint_state_msg(positions)
-        self.pub_joint_states.publish(msg)
 
         self.publish(body_value, self.pub_body, self.pub_joint_states)
         self.publish(elbow_value, self.pub_elbow, self.pub_joint_states)
@@ -101,29 +96,55 @@ class HubertListener:
     def open_effector(self):
         gripper_value = hubert.get_gripper_open()
 
-        positions = hubert.get_jointstate()
-        msg = self.create_joint_state_msg(positions)
-        self.pub_joint_states.publish(msg)
-
         self.publish(gripper_value, self.pub_gripper, self.pub_joint_states)
 
         print("End effector is open!")
     
     def grab(self):
+        # Go down
+        coordinates = self.old_coordinates - [0, 0, self.z_offset]
+
+        [body_value, shoulder_value, elbow_value] = hubert.get_arm_goto(coordinates)
+
+        self.publish(body_value, self.pub_body, self.pub_joint_states)
+        self.publish(elbow_value, self.pub_elbow, self.pub_joint_states)
+        self.publish(shoulder_value, self.pub_shoulder, self.pub_joint_states)
+
+        # Grab
         gripper_value = hubert.get_gripper_close()
+        self.publish(gripper_value, self.pub_gripper, self.pub_joint_states, delay=3)
+
+        # Go up
+        coordinates = self.old_coordinates
+
+        [body_value, shoulder_value, elbow_value] = hubert.get_arm_goto(coordinates)
+
+        self.publish(body_value, self.pub_body, self.pub_joint_states)
+        self.publish(elbow_value, self.pub_elbow, self.pub_joint_states)
+        self.publish(shoulder_value, self.pub_shoulder, self.pub_joint_states)
+
+        print("Hubert grabbed object!")
+
+
+    def move_arm(self, relative_coordinates):
+        coordinates = self.old_coordinates + [relative_coordinates.x, relative_coordinates.y, 0]
+
+        [body_value, shoulder_value, elbow_value] = hubert.get_arm_goto(coordinates)
 
         positions = hubert.get_jointstate()
         msg = self.create_joint_state_msg(positions)
         self.pub_joint_states.publish(msg)
 
-        self.publish(gripper_value, self.pub_gripper, self.pub_joint_states)
+        self.publish(body_value, self.pub_body, self.pub_joint_states)
+        self.publish(elbow_value, self.pub_elbow, self.pub_joint_states)
+        self.publish(shoulder_value, self.pub_shoulder, self.pub_joint_states)
 
-        print("End effector is grabbing!")
+        self.old_coordinates = coordinates
+        
+        time.sleep(3)
+        print("Move arm relative to coordinate done!")
 
-    def move_arm(self, relative_coordinates):
-        pass
-    
-
+        return True
 
     def run_start(self):
         print("Starting up...")
