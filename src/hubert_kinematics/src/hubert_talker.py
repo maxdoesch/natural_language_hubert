@@ -69,7 +69,7 @@ class HubertListener:
         publisher.publish(pcm_value)
         joint_states_publisher.publish(self.create_joint_state_msg(hubert.get_jointstate()))
         time.sleep(delay)
-
+        
     
     def arm_goto(self, coordinate):
         coordinates = [coordinate.point.x + self.x_offset, coordinate.point.y + self.y_offset, coordinate.point.z + self.z_offset]
@@ -144,15 +144,15 @@ class HubertListener:
 
         [body_value, neck_tilt_value, neck_pan_value, shoulder_value, elbow_value, gripper_value] = hubert.get_stance_first()
         
+        self.pub_shoulder.publish(shoulder_value)
+        time.sleep(1)
+        self.pub_elbow.publish(elbow_value)
+        time.sleep(1)
         self.pub_body.publish(body_value)
         time.sleep(1)
         self.pub_neck_tilt.publish(neck_tilt_value)
         time.sleep(1)
         self.pub_neck_pan.publish(neck_pan_value)
-        time.sleep(1)
-        self.pub_shoulder.publish(shoulder_value)
-        time.sleep(1)
-        self.pub_elbow.publish(elbow_value)
         time.sleep(1)
         self.pub_gripper.publish(gripper_value)
 
