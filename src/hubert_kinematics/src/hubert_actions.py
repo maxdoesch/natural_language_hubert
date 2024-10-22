@@ -159,18 +159,18 @@ class Hubert:
 
         return self._pcm_neck_tilt
 
-    def get_cam_move_right(self, value=200):
+    # def get_cam_move_right(self, value=200):
         
-        if self._pcm_neck_pan > 1840 and self._pcm_body < 1700:
-            self._pcm_body += value
-        elif self._pcm_body > 1700:
-            self._pcm_neck_pan = 550
-            self._pcm_body = self.get_body_forward()
-        else:
-            self._pcm_neck_pan += value
-        self._update_pcm2angle_positions()
+    #     if self._pcm_neck_pan > 1840 and self._pcm_body < 1700:
+    #         self._pcm_body += value
+    #     elif self._pcm_body > 1700:
+    #         self._pcm_neck_pan = 550
+    #         self._pcm_body = self.get_body_forward()
+    #     else:
+    #         self._pcm_neck_pan += value
+    #     self._update_pcm2angle_positions()
 
-        return self._pcm_neck_pan, self._pcm_body
+    #     return self._pcm_neck_pan, self._pcm_body
 
     def get_stance_first(self):
         """
