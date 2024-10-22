@@ -205,3 +205,6 @@ class Hubert:
         pcm_value = self._pcm_body
 
         return pcm_value
+
+hub = Hubert()
+print(hub.get_stance_first())

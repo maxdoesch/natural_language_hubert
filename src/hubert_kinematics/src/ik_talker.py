@@ -86,8 +86,10 @@ class Listener:
         self.instruction = data.data
     
     def arm_goto(self, coordinate):
-        above_distance = .03
-        coordinates = [coordinate.point.x, coordinate.point.y, coordinate.point.z + above_distance]
+        z_offset = .03
+        y_offset = -.01
+        x_offset = 0.00
+        coordinates = [coordinate.point.x + x_offset, coordinate.point.y + y_offset, coordinate.point.z + z_offset]
         [body_value, shoulder_value, elbow_value] = hubert.get_arm_goto(coordinates)
 
         positions = hubert.get_jointstate()
