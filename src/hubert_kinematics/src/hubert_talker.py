@@ -33,6 +33,7 @@ class HubertListener:
         self.srv_open_eef = rospy.Service('/hubert/open_effector', Empty, self.open_effector)
         self.srv_grab = rospy.Service('/hubert/grab', Empty, self.grab)
         self.srv_move_arm = rospy.Service('/hubert/move_arm', MoveArm, self.move_arm)
+        self.srv_idle = rospy.Service('/hubert/idle', Empty, self.idle)
 
         # Publishers
         self.pub_body = rospy.Publisher('/servo_body', UInt16, queue_size=10, latch=True)
@@ -138,24 +139,57 @@ class HubertListener:
         print("Move arm relative to coordinate done!")
 
         return True
+    
+    def idle(self):
+        [body_value, neck_tilt_value, neck_pan_value, shoulder_value, elbow_value, gripper_value] = hubert.get_stance_first()
+
+        self.pub_shoulder.publish(shoulder_value)
+        time.sleep(1)
+        self.pub_elbow.publish(elbow_value)
+        time.sleep(1)
+        self.pub_neck_tilt.publish(neck_tilt_value)
+        time.sleep(1)
+        self.pub_neck_pan.publish(neck_pan_value)
+        time.sleep(1)
+        self.pub_body.publish(body_value)
+        time.sleep(1)
+        self.pub_gripper.publish(gripper_value)
+
+        angles = hubert.get_jointstate()
+        msg = self.create_joint_state_msg(angles)
+        self.pub_joint_states.publish(msg)
+
+        print("Idle position done!")
 
     def run_start(self):
         print("Starting up...")
 
         [body_value, neck_tilt_value, neck_pan_value, shoulder_value, elbow_value, gripper_value] = hubert.get_stance_first()
         
+<<<<<<< HEAD
         self.pub_shoulder.publish(shoulder_value)
         time.sleep(1)
         self.pub_elbow.publish(elbow_value)
         time.sleep(1)
         self.pub_body.publish(body_value)
         time.sleep(1)
+=======
+>>>>>>> 172a812e01e65d5017a8483200b75d4e36e2160f
         self.pub_neck_tilt.publish(neck_tilt_value)
         time.sleep(1)
         self.pub_neck_pan.publish(neck_pan_value)
         time.sleep(1)
+<<<<<<< HEAD
+=======
+        self.pub_shoulder.publish(shoulder_value)
+        time.sleep(1)
+        self.pub_elbow.publish(elbow_value)
+        time.sleep(1)
+        self.pub_body.publish(body_value)
+        time.sleep(1)
+>>>>>>> 172a812e01e65d5017a8483200b75d4e36e2160f
         self.pub_gripper.publish(gripper_value)
-
+        
         #Publish on joint states
 
         time.sleep(4)
