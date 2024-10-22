@@ -11,6 +11,8 @@ import tf2_ros
 import tf2_geometry_msgs
 from tf.transformations import quaternion_matrix
 
+HEIGHT_ADJUST = 0.01
+
 class PixelTo3D:
     def __init__(self):
         self.bridge = CvBridge()
@@ -101,6 +103,7 @@ class PixelTo3D:
             t = np.dot(self.plane_base_point - ray_origin, self.plane_normal) / denominator
 
             intersection_point = ray_origin + t * ray_base
+            intersection_point[2] += HEIGHT_ADJUST
 
             point = Point(intersection_point[0], intersection_point[1], intersection_point[2])
 
@@ -125,8 +128,6 @@ class PixelTo3D:
         t.transform.translation.y = point_3d.point.y
         t.transform.translation.z = point_3d.point.z
         t.transform.rotation.w = 1.0  # No rotation, only translation
-
-        print(t)
 
         self.tf_broadcaster.sendTransform(t)
 
