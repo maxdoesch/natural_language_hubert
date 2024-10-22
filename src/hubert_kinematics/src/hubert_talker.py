@@ -144,8 +144,6 @@ class HubertListener:
 
         [body_value, neck_tilt_value, neck_pan_value, shoulder_value, elbow_value, gripper_value] = hubert.get_stance_first()
         
-        self.pub_body.publish(body_value)
-        time.sleep(1)
         self.pub_neck_tilt.publish(neck_tilt_value)
         time.sleep(1)
         self.pub_neck_pan.publish(neck_pan_value)
@@ -154,8 +152,10 @@ class HubertListener:
         time.sleep(1)
         self.pub_elbow.publish(elbow_value)
         time.sleep(1)
+        self.pub_body.publish(body_value)
+        time.sleep(1)
         self.pub_gripper.publish(gripper_value)
-
+        
         #Publish on joint states
 
         time.sleep(4)
