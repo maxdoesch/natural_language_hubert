@@ -6,6 +6,7 @@ from cv_bridge import CvBridge
 from sensor_msgs.msg import Image
 from std_msgs.msg import String
 from hubert_launch.msg import LabeledPoint
+from hubert_launch.srv import Segment
 from geometry_msgs.msg import Point
 
 from detectron2.config import get_cfg
@@ -49,8 +50,8 @@ class HuberOVSeg:
         self.ov_seg_model = SlimFrozenSeg(cfg)
         self.mask_pub = rospy.Publisher('/hubert_camera/panoptic_mask', Image, queue_size=1)
         self.coordinate_publisher = rospy.Publisher('/hubert_camera/pixel_coordinate', LabeledPoint, queue_size=1)
-        self.label_sub = rospy.Subscriber('/hubert/label_topic', String, self.label_callback, queue_size=1)
         self.image_sub = rospy.Subscriber('/hubert_camera/image_raw', Image, self.image_callback, queue_size=1)
+        rospy.Service("/hubert/label", Segment, self.label_callback)
         self.latest_image = None
         self.processing = False
         self.latest_label = 'Person'
@@ -63,39 +64,36 @@ class HuberOVSeg:
 
     def label_callback(self, msg):
 
-        self.latest_label = msg.data
+        self.process_image(msg.data)
 
-        print(self.latest_label)
+        return True
 
-    def process_image(self, event):
-        if self.latest_image is not None and not self.processing:
-            self.ov_seg_model.set_label(self.latest_label)
+    def process_image(self, label):
+        self.ov_seg_model.set_label(label)
 
-            self.processing = True
-            cv2_image = self.cv2_bridge.imgmsg_to_cv2(self.latest_image, desired_encoding="bgr8")
-            
-            predictions, visualized_output = self.ov_seg_model.run_on_image(cv2_image)
+        self.processing = True
+        cv2_image = self.cv2_bridge.imgmsg_to_cv2(self.latest_image, desired_encoding="bgr8")
+        
+        predictions, visualized_output = self.ov_seg_model.run_on_image(cv2_image)
 
-            panoptic_seg, segments_info = predictions["panoptic_seg"]
+        panoptic_seg, segments_info = predictions["panoptic_seg"]
 
-            for segment in segments_info:
-                if segment['category_id'] == 0:
-                    com_coordinates = get_instance_com(segment['id'], panoptic_seg)
+        for segment in segments_info:
+            if segment['category_id'] == 0:
+                com_coordinates = get_instance_com(segment['id'], panoptic_seg)
 
-                    labeled_point = LabeledPoint()
-                    labeled_point.point = Point(x=com_coordinates[0], y=com_coordinates[1])
-                    labeled_point.label = self.latest_label
+                labeled_point = LabeledPoint()
+                labeled_point.point = Point(x=com_coordinates[0], y=com_coordinates[1])
+                labeled_point.label = self.latest_label
 
-                    self.coordinate_publisher.publish(labeled_point)
+                self.coordinate_publisher.publish(labeled_point)
 
-                    continue
+                continue
 
 
-            ros_image = self.cv2_bridge.cv2_to_imgmsg(visualized_output.get_image()[:, :, ::-1], encoding="bgr8")
-            ros_image.header.frame_id = "camera_link"
-            self.mask_pub.publish(ros_image)
-            self.processing = False
-            self.latest_image = None
+        ros_image = self.cv2_bridge.cv2_to_imgmsg(visualized_output.get_image()[:, :, ::-1], encoding="bgr8")
+        ros_image.header.frame_id = "camera_link"
+        self.mask_pub.publish(ros_image)
 
 if __name__ == '__main__':
     try:
