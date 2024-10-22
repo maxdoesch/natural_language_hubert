@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.2)
-project(hubert_ov_seg)
+project(hubert_natural_language)
 
 ## Compile as C++11, supported in ROS Kinetic and newer
 # add_compile_options(-std=c++11)
@@ -11,14 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
-  sensor_msgs
-  cv_bridge
-  image_transport
 )
-
-find_package(OpenCV REQUIRED)
-
-# cv_bridge
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -111,7 +104,7 @@ find_package(OpenCV REQUIRED)
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES hubert_ov_seg
+#  LIBRARIES hubert_natural_language
 #  CATKIN_DEPENDS roscpp rospy std_msgs
 #  DEPENDS system_lib
 )
@@ -129,7 +122,7 @@ include_directories(
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/hubert_ov_seg.cpp
+#   src/${PROJECT_NAME}/hubert_natural_language.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -140,7 +133,7 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-add_executable(camera_publisher src/camera_publisher.cpp)
+# add_executable(${PROJECT_NAME}_node src/hubert_natural_language_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -150,13 +143,12 @@ add_executable(camera_publisher src/camera_publisher.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
-add_dependencies(camera_publisher ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+# add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(camera_publisher
-  ${catkin_LIBRARIES}
-  ${OpenCV_LIBS}
-)
+# target_link_libraries(${PROJECT_NAME}_node
+#   ${catkin_LIBRARIES}
+# )
 
 #############
 ## Install ##
@@ -168,8 +160,7 @@ target_link_libraries(camera_publisher
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
 catkin_install_python(PROGRAMS
-  scripts/hubert_ov_seg.py
-  scripts/3d_projection.py
+  scripts/hubert_natural_language.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
@@ -206,7 +197,7 @@ catkin_install_python(PROGRAMS
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_hubert_ov_seg.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_hubert_natural_language.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()
