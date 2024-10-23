@@ -155,7 +155,7 @@ class Hubert:
         pcm_value : int
             The value for 'neck_tilt'
         """
-        self._pcm_neck_tilt = 1500 # Value is hardcoded
+        self._pcm_neck_tilt = 1200 # Value is hardcoded
         self._update_pcm2angle_positions()
         print(self._angle_neck_tilt)
 
