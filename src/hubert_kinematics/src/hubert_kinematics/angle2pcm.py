@@ -44,7 +44,7 @@ class Angle2pcm:
         pcm_min = 550
         pcm_max = 2400
 
-        pcm_value = self.__calculate(angle, angle_min, angle_max, pcm_min, pcm_max)
+        pcm_value = -self.__calculate(angle, angle_min, angle_max, pcm_min, pcm_max)
 
         return int(pcm_value)  # Return as an integer
 
