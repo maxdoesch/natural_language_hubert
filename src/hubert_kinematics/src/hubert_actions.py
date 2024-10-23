@@ -115,11 +115,13 @@ class Hubert:
         pcm_list : list
             A list of the pcm values for [shoulder, elbow]
         """
+        self._angle_body = pi/4
         self._angle_shoulder = pi/2
         self._angle_elbow = -pi/2
+        self._angle_neck_pan = -pi/4
         self._update_angle2pcm_positions()
 
-        return [self._pcm_shoulder, self._pcm_elbow]
+        return [self._pcm_body, self._pcm_shoulder, self._pcm_elbow, self._pcm_neck_pan]
 
     def get_arm_goto(self, coordinates: list):
         """
@@ -153,7 +155,7 @@ class Hubert:
         pcm_value : int
             The value for 'neck_tilt'
         """
-        self._pcm_neck_tilt = 1300 # Value is hardcoded
+        self._pcm_neck_tilt = 1500 # Value is hardcoded
         self._update_pcm2angle_positions()
         print(self._angle_neck_tilt)
 
