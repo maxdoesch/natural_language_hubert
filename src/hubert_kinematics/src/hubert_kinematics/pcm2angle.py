@@ -46,7 +46,7 @@ class Pcm2angle:
 
         angle_value = self.__calculate(pcm, angle_min, angle_max, pcm_min, pcm_max)
 
-        return angle_value  # Return as a float
+        return -angle_value  # Return as a float
 
     def neck_tilt(self, pcm: int) -> float:
         """
