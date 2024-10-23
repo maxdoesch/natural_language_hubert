@@ -166,39 +166,24 @@ class HubertListener:
 
         [body_value, neck_tilt_value, neck_pan_value, shoulder_value, elbow_value, gripper_value] = hubert.get_stance_first()
         
-<<<<<<< HEAD
         self.pub_shoulder.publish(shoulder_value)
         time.sleep(1)
         self.pub_elbow.publish(elbow_value)
         time.sleep(1)
         self.pub_body.publish(body_value)
         time.sleep(1)
-=======
->>>>>>> 172a812e01e65d5017a8483200b75d4e36e2160f
         self.pub_neck_tilt.publish(neck_tilt_value)
         time.sleep(1)
         self.pub_neck_pan.publish(neck_pan_value)
         time.sleep(1)
-<<<<<<< HEAD
-=======
-        self.pub_shoulder.publish(shoulder_value)
-        time.sleep(1)
-        self.pub_elbow.publish(elbow_value)
-        time.sleep(1)
         self.pub_body.publish(body_value)
         time.sleep(1)
->>>>>>> 172a812e01e65d5017a8483200b75d4e36e2160f
         self.pub_gripper.publish(gripper_value)
-        
+
         #Publish on joint states
 
         time.sleep(4)
         print("First stance done!")
-
-        neck_tilt_value = hubert.get_neck_tilt_down()
-        self.pub_neck_tilt.publish(neck_tilt_value)
-        time.sleep(4)
-        print("Tilt neck done!")
 
         [shoulder_value, elbow_value] = hubert.get_arm_idle()
         self.pub_elbow.publish(elbow_value)
@@ -207,6 +192,14 @@ class HubertListener:
         
         print("Idle arms done!")
         time.sleep(4)
+
+        self.pub_body.publish(body_value)
+        time.sleep(1)
+
+        neck_tilt_value = hubert.get_neck_tilt_down()
+        self.pub_neck_tilt.publish(neck_tilt_value)
+        time.sleep(4)
+        print("Tilt neck done!")
 
         angles = [pcm2angle.body(body_value), pcm2angle.neck_tilt(neck_tilt_value), pcm2angle.neck_pan(neck_pan_value),
                         pcm2angle.shoulder(shoulder_value), pcm2angle.elbow(elbow_value)]
