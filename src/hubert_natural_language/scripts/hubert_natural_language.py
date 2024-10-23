@@ -47,19 +47,15 @@ class NaturalLanguageHubert:
         rospy.Service("/hubert/prompt", HubertPrompt, self.prompt_callback)
         rospy.Subscriber("/hubert_camera/image_raw", Image, self.image_callback)
         rospy.Subscriber('/base_frame/3d_coordinate', LabeledPoint, self.labeled_point_callback)
+        self.label_pub = rospy.Publisher('/hubert/label', String, queue_size=10)
 
-        rospy.wait_for_service('/hubert/label')        
         rospy.wait_for_service('/hubert/open_effector')
         rospy.wait_for_service('/hubert/go_to_coordinate')
         rospy.wait_for_service('/hubert/grab')
         rospy.wait_for_service('/hubert/move_arm')
         rospy.wait_for_service('/hubert/idle')
-#
+
         try:
-            self.label_service = rospy.ServiceProxy(
-                '/hubert/label', 
-                Segment
-            )
             self.open_effector_service = rospy.ServiceProxy(
                 '/hubert/open_effector', 
                 Empty
@@ -182,8 +178,15 @@ class NaturalLanguageHubert:
     
     def place_arm_over(self, object_name):
         rospy.loginfo(f"Placing arm over {object_name}")
+        
+        self.label_pub.publish(object_name)
 
-        self.label_service(object_name)
+        time.sleep(1)
+
+        self.labeled_point = None
+
+        while self.labeled_point is None:
+            time.sleep(1)
 
         while object_name != self.labeled_point.label:
             time.sleep(1)

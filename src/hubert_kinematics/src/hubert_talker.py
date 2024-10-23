@@ -28,9 +28,11 @@ hubert = _Hubert()
 
 class HubertListener:
     def __init__(self):
+        rospy.init_node('joints_talker', anonymous=True)
+        
         # Service
-        self.srv_goto = rospy.Service('/hubert/go_to_coordinate', GoToCoordinate, self.arm_goto)
         self.srv_open_eef = rospy.Service('/hubert/open_effector', Empty, self.open_effector)
+        self.srv_goto = rospy.Service('/hubert/go_to_coordinate', GoToCoordinate, self.arm_goto)
         self.srv_grab = rospy.Service('/hubert/grab', Empty, self.grab)
         self.srv_move_arm = rospy.Service('/hubert/move_arm', MoveArm, self.move_arm)
         self.srv_idle = rospy.Service('/hubert/idle', Empty, self.idle)
@@ -51,7 +53,6 @@ class HubertListener:
         self.z_offset = .04
 
         # Rospy node
-        rospy.init_node('joints_talker', anonymous=True)
         self.rate = rospy.Rate(10) # 10hz
 
 
@@ -87,14 +88,16 @@ class HubertListener:
 
         return True
     
-    def open_effector(self):
+    def open_effector(self, req):
         gripper_value = hubert.get_gripper_open()
 
         self.publish(gripper_value, self.pub_gripper, self.pub_joint_states)
 
         print("End effector is open!")
+
+        return Empty()
     
-    def grab(self):
+    def grab(self, req):
         # Go down
         coordinates = self.old_coordinates - [0, 0, self.z_offset]
 
@@ -119,6 +122,8 @@ class HubertListener:
 
         print("Hubert grabbed object!")
 
+        return Empty()
+
 
     def move_arm(self, relative_coordinates):
         coordinates = self.old_coordinates + [relative_coordinates.x, relative_coordinates.y, 0]
@@ -140,7 +145,7 @@ class HubertListener:
 
         return True
     
-    def idle(self):
+    def idle(self, req):
         [body_value, neck_tilt_value, neck_pan_value, shoulder_value, elbow_value, gripper_value] = hubert.get_stance_first()
 
         self.pub_shoulder.publish(shoulder_value)
@@ -160,6 +165,8 @@ class HubertListener:
         self.pub_joint_states.publish(msg)
 
         print("Idle position done!")
+
+        return Empty()
 
     def run_start(self):
         print("Starting up...")
@@ -200,7 +207,7 @@ class HubertListener:
                         pcm2angle.shoulder(shoulder_value), pcm2angle.elbow(elbow_value)]
         
         print("Published joint states!")
-        while True:
+        while not rospy.is_shutdown():
             angles = hubert.get_jointstate()
             msg = self.create_joint_state_msg(angles)
             self.pub_joint_states.publish(msg)

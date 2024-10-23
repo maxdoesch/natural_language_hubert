@@ -24,7 +24,7 @@
     </group>
 
 
-    <node name="ik_talker" pkg="hubert_kinematics" type="ik_talker.py" output="screen"/>
+    <node name="hubert_talker" pkg="hubert_kinematics" type="hubert_talker.py" output="screen"/>
 
     <node name="hubert_natural_language" pkg="hubert_natural_language" type="hubert_natural_language.py" output="screen" />
 
