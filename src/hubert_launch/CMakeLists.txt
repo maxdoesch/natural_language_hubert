@@ -59,6 +59,7 @@ add_service_files(
   FILES
   HubertPrompt.srv
   GoToCoordinate.srv
+  Segment.srv
   MoveArm.srv
 )
 
