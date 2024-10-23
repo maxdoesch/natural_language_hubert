@@ -95,13 +95,13 @@ class HubertListener:
 
         print("End effector is open!")
 
-        return Empty()
+        return []
     
     def grab(self, req):
         # Go down
-        coordinates = self.old_coordinates - [0, 0, self.z_offset]
+        coordinates = np.array(self.old_coordinates) - np.array([0, 0, self.z_offset - 0.01])
 
-        [body_value, shoulder_value, elbow_value] = hubert.get_arm_goto(coordinates)
+        [body_value, shoulder_value, elbow_value] = hubert.get_arm_goto(coordinates.tolist())
 
         self.publish(body_value, self.pub_body, self.pub_joint_states)
         self.publish(elbow_value, self.pub_elbow, self.pub_joint_states)
@@ -116,13 +116,13 @@ class HubertListener:
 
         [body_value, shoulder_value, elbow_value] = hubert.get_arm_goto(coordinates)
 
-        self.publish(body_value, self.pub_body, self.pub_joint_states)
-        self.publish(elbow_value, self.pub_elbow, self.pub_joint_states)
         self.publish(shoulder_value, self.pub_shoulder, self.pub_joint_states)
-
+        self.publish(elbow_value, self.pub_elbow, self.pub_joint_states)
+        self.publish(body_value, self.pub_body, self.pub_joint_states)
+        
         print("Hubert grabbed object!")
 
-        return Empty()
+        return []
 
 
     def move_arm(self, relative_coordinates):
@@ -162,7 +162,7 @@ class HubertListener:
 
         print("Idle position done!")
 
-        return Empty()
+        return []
 
     def run_start(self):
         print("Starting up...")

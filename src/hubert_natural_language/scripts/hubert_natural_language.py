@@ -14,27 +14,27 @@ from std_srvs.srv import Empty
 from std_msgs.msg import String
 
 
-PROMPT_SYSTEM = "You are a stationary robot arm tasked with executing instructions based on a given query by a human operator. If you are also given an image you should analyze the image for objects in the scene relevant to the human prompt. In order to be able execute these instructions you break them down into smaller atomic instructions which are necessary to complete the task. You can only use the following set of instructions: (place arm over <object>; perform grabbing action with end effector; open end effector; move arm by <x,y> millimeters relative to the ground plane, done)."
+PROMPT_SYSTEM = "You are a stationary robot arm tasked with executing instructions based on a given query by a human operator. If you are also given an image you should analyze the image for objects in the scene relevant to the human prompt. In order to be able execute these instructions you break them down into smaller atomic instructions which are necessary to complete the task. You can only use the following set of instructions: (place arm over <object>; perform grabbing action with end effector; open end effector; move arm by <x,y> millimeters relative to the ground plane, go to idle position)."
 
 PROMPT_USER_1 = "Human: Please prepare me some apple slices."
 
-PROMPT_ASSISTANT_1 = "Robot: 1. open end effector 2. place arm over <knive> 3. perform grabbing action with end effector 4. place arm over <apple> 5. move arm by <20,0> millimeters relative to the ground plane 6. move arm by <-20,0> millimeters relative to the ground plane 7. move arm by <20,0> millimeters relative to the ground plane 8. done"
+PROMPT_ASSISTANT_1 = "Robot: 1. open end effector 2. place arm over <knive> 3. perform grabbing action with end effector 4. go to idle position 5. place arm over <apple> 6. move arm by <20,0> millimeters relative to the ground plane 7. move arm by <-20,0> millimeters relative to the ground plane 8. move arm by <20,0> millimeters relative to the ground plane 9. go to idle position"
 
 PROMPT_USER_2 = "Human: Bring my child something to play with."
 
-PROMPT_ASSISTANT_2 = "Robot: 1. open end effector 2. place arm over <stuffed giraffe> 3. perform grabbing action with end effector 4. place arm over <child> 5. open end effector 6. done"
+PROMPT_ASSISTANT_2 = "Robot: 1. open end effector 2. place arm over <stuffed giraffe> 3. perform grabbing action with end effector 4. go to idle position 5. place arm over <child> 6. open end effector 7. go to idle position"
 
 PROMPT_USER_3 = "Human: How would you hold the snickers?"
 
-PROMPT_ASSISTANT_3 = "Robot: 1. open end effector 2. place arm over <snickers> 3. perform grabbing action with end effector 4. done"
+PROMPT_ASSISTANT_3 = "Robot: 1. open end effector 2. place arm over <snickers> 3. perform grabbing action with end effector 4. go to idle position"
 
 PROMPT_USER_4 = "Human: How would you put a grapefruit from the table into the bowl?"
 
-PROMPT_ASSISTANT_4 = "Robot: 1. open end effector 2. place arm over <grapefruit> 3. perform grabbing action with end effector 4. place arm over <bowl> 5. open end effector 6. done"
+PROMPT_ASSISTANT_4 = "Robot: 1. open end effector 2. place arm over <grapefruit> 3. perform grabbing action with end effector 4. go to idle position 5. place arm over <bowl> 6. open end effector 7. go to idle position"
 
 PROMPT_USER_5 = "Human: How would you bring me the peanuts?"
 
-PROMPT_ASSISTANT_5 = "Robot: 1. open end effector 2. place arm over <peanuts> 3. perform grabbing action with end effector 4. move arm by <30,0> millimeters relative to the ground plane 5. done"
+PROMPT_ASSISTANT_5 = "Robot: 1. open end effector 2. place arm over <peanuts> 3. perform grabbing action with end effector 4. move arm by <30,0> millimeters relative to the ground plane 5. go to idle position"
 
 PROMPT_USER = [PROMPT_USER_1, PROMPT_USER_2, PROMPT_USER_3, PROMPT_USER_4, PROMPT_USER_5]
 PROMPT_ASSISTANT = [PROMPT_ASSISTANT_1, PROMPT_ASSISTANT_2, PROMPT_ASSISTANT_3, PROMPT_ASSISTANT_4, PROMPT_ASSISTANT_5]
@@ -87,16 +87,17 @@ class NaturalLanguageHubert:
         response = "No image information available!"
 
         #if self.latest_image_base64 is not None:
-        #    response = self.openai_request(request.prompt, self.latest_image_base64)
-#
-        #return HubertPromptResponse(f"Received prompt: {response}")
+        
+        response = self.openai_request(request.prompt, self.latest_image_base64)
 
-        print(request.prompt)
+        print(response)
+
+        self.execute_commands(response)
 
 
-        self.execute_commands("Robot: 1. place arm over <apple> 2. done")
+        #self.execute_commands("Robot: 1. open end effector 2. place arm over <apple> 3. perform grabbing action with end effector 4. place arm over <orange> 5. open end effector  4. done")
 
-        return "Robot: 1. place arm over <apple> 2. done"
+        return f"Received prompt: {response}"
     
     def image_callback(self, msg):
         self.latest_image_base64 = self.convert_image_to_base64(msg)
@@ -140,8 +141,6 @@ class NaturalLanguageHubert:
             messages = messages
         )
 
-        self.execute_commands(completion.choices[0].message.content)
-
         return completion.choices[0].message.content
     
     def parse_robot_commands(self, prompt):
@@ -171,8 +170,8 @@ class NaturalLanguageHubert:
                     y = coords_match.group(2)
                     commands.append(("move_arm", (x, y)))
 
-            elif "done" in command:
-                commands.append(("done", None))
+            elif "go to idle position" in command:
+                commands.append(("go_to_idle_position", None))
 
         return commands
     
@@ -207,9 +206,13 @@ class NaturalLanguageHubert:
     def move_arm(self, x, y):
         rospy.loginfo(f"Moving arm by x={x}, y={y} millimeters")
 
-        self.move_arm_service(x, y)
+        move_arm_request = MoveArm()
+        move_arm_request.x = x
+        move_arm_request.y = y
 
-    def done(self):
+        self.move_arm_service(move_arm_request)
+
+    def go_to_idle_position(self):
         rospy.loginfo("Finished execution")
 
         self.idle_service()
@@ -226,9 +229,8 @@ class NaturalLanguageHubert:
                 self.open_effector()
             elif command_type == "move_arm":
                 self.move_arm(*params)
-            elif command_type == "done":
-                self.done()
-                break
+            elif command_type == "go_to_idle_position":
+                self.go_to_idle_position()
 
 if __name__ == '__main__':
     rospy.init_node('natural_language_hubert_node')
